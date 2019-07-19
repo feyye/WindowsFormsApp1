@@ -31,7 +31,6 @@ namespace WindowsFormsApp1
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.Button followSerialOpenBtn;
             this.mainSerialOpenBtn = new System.Windows.Forms.Button();
             this.mainSerialComboBox = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -51,6 +50,7 @@ namespace WindowsFormsApp1
             this.resultLabel = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.followSerialOpenBtn = new System.Windows.Forms.Button();
             this.followTextBox = new System.Windows.Forms.TextBox();
             this.followSerialComboBox = new System.Windows.Forms.ComboBox();
             this.label10 = new System.Windows.Forms.Label();
@@ -62,21 +62,9 @@ namespace WindowsFormsApp1
             this.followRTXCheckBox = new System.Windows.Forms.CheckBox();
             this.followRSSIThreshold = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
-            followSerialOpenBtn = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // followSerialOpenBtn
-            // 
-            followSerialOpenBtn.Location = new System.Drawing.Point(233, 484);
-            followSerialOpenBtn.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            followSerialOpenBtn.Name = "followSerialOpenBtn";
-            followSerialOpenBtn.Size = new System.Drawing.Size(88, 26);
-            followSerialOpenBtn.TabIndex = 0;
-            followSerialOpenBtn.Text = "open";
-            followSerialOpenBtn.UseVisualStyleBackColor = true;
-            followSerialOpenBtn.Click += new System.EventHandler(this.followSerialOpenBtn_Click);
             // 
             // mainSerialOpenBtn
             // 
@@ -285,8 +273,8 @@ namespace WindowsFormsApp1
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.followSerialOpenBtn);
             this.panel2.Controls.Add(this.followTextBox);
-            this.panel2.Controls.Add(followSerialOpenBtn);
             this.panel2.Controls.Add(this.followSerialComboBox);
             this.panel2.Controls.Add(this.label10);
             this.panel2.Controls.Add(this.followSendTextBox);
@@ -302,6 +290,17 @@ namespace WindowsFormsApp1
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(324, 650);
             this.panel2.TabIndex = 31;
+            // 
+            // followSerialOpenBtn
+            // 
+            this.followSerialOpenBtn.Location = new System.Drawing.Point(233, 479);
+            this.followSerialOpenBtn.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.followSerialOpenBtn.Name = "followSerialOpenBtn";
+            this.followSerialOpenBtn.Size = new System.Drawing.Size(88, 26);
+            this.followSerialOpenBtn.TabIndex = 32;
+            this.followSerialOpenBtn.Text = "open";
+            this.followSerialOpenBtn.UseVisualStyleBackColor = true;
+            this.followSerialOpenBtn.Click += new System.EventHandler(this.button1_Click);
             // 
             // followTextBox
             // 
@@ -465,6 +464,7 @@ namespace WindowsFormsApp1
         private System.Windows.Forms.CheckBox followRTXCheckBox;
         private System.Windows.Forms.TextBox followRSSIThreshold;
         private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Button followSerialOpenBtn;
         private System.Windows.Forms.TextBox mainTextBox;
     }
 }

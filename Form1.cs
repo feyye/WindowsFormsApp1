@@ -81,9 +81,6 @@ namespace WindowsFormsApp1
                 string stopBits = "1";
                 string parity = "None";
                 string handshake = "None";
-
-//                ComModel comModel = new ComModel();
-            
                 controller.OpenSerialPort(portName,baudRate,dataBits,stopBits,parity,handshake);
             }
             else
@@ -189,6 +186,9 @@ namespace WindowsFormsApp1
             {
                 
                 this.mainSerialOpenBtn.Text = "close";
+            }else
+            {
+                MessageBox.Show("打开失败");
             }
            
             
@@ -208,7 +208,6 @@ namespace WindowsFormsApp1
             if (!e.isOpend)
             {
                 
-                Console.Write("asd");
                 this.mainSerialOpenBtn.Text = "open";
             }
 
@@ -221,12 +220,29 @@ namespace WindowsFormsApp1
 
         public void followOpenComEvent(object sender, SerialPortEventArgs e)
         {
-            throw new NotImplementedException();
+            if (e.isOpend)
+            {
+                
+                this.followSerialOpenBtn.Text = "close";
+            }
+            else
+            {
+                MessageBox.Show("打开失败");
+            }
         }
 
         public void followCloseComEvent(object sender, SerialPortEventArgs e)
         {
-            throw new NotImplementedException();
+            if (this.InvokeRequired)
+            {
+                Invoke(new Action<Object, SerialPortEventArgs>(followCloseComEvent), sender, e);
+                return;
+            }
+            if (!e.isOpend)
+            {
+                
+                this.followSerialOpenBtn.Text = "open";
+            }
         }
 
         public void followComReceiveDataEvent(object sender, SerialPortEventArgs e)
@@ -236,8 +252,42 @@ namespace WindowsFormsApp1
 
         private void followSerialOpenBtn_Click(object sender, EventArgs e)
         {
+            Button btn = (Button) sender;
+            if (btn.Text.Equals("open"))
+            {
+                string portName = followSerialComboBox.Text;
+                string baudRate = followRateComboBox.Text;
+                string dataBits = "8";
+                string stopBits = "1";
+                string parity = "None";
+                string handshake = "None";
+                controller.followOpenSerialPort(portName,baudRate,dataBits,stopBits,parity,handshake);
+            }
+            else
+            {
+                controller.followCloseSerialPort();
+            }
             
             
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Button btn = (Button) sender;
+            if (btn.Text.Equals("open"))
+            {
+                string portName = followSerialComboBox.Text;
+                string baudRate = followRateComboBox.Text;
+                string dataBits = "8";
+                string stopBits = "1";
+                string parity = "None";
+                string handshake = "None";
+                controller.followOpenSerialPort(portName,baudRate,dataBits,stopBits,parity,handshake);
+            }
+            else
+            {
+                controller.followCloseSerialPort();
+            }
         }
     }
 }

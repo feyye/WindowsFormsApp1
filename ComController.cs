@@ -161,7 +161,7 @@ namespace WindowsFormsApp1
         /// <returns></returns>
         public bool followSendDataToCom(Byte[] data)
         {
-            return comModel.Send(data);
+            return followComModel.Send(data);
         }
 
         /// <summary>
@@ -173,7 +173,7 @@ namespace WindowsFormsApp1
         {
             if (str != null && str != "")
             {
-                return comModel.Send(Encoding.Default.GetBytes(str));
+                return followComModel.Send(Encoding.Default.GetBytes(str));
             }
             return true;
         }
@@ -192,7 +192,7 @@ namespace WindowsFormsApp1
         {
             if (portName != null && portName != "")
             {
-                comModel.Open(portName, baudRate, dataBits, stopBits, parity, handshake);
+                followComModel.Open(portName, baudRate, dataBits, stopBits, parity, handshake);
             }
         }
 
@@ -201,7 +201,7 @@ namespace WindowsFormsApp1
         /// </summary>
         public void followCloseSerialPort()
         {
-            comModel.Close();
+            followComModel.Close();
         }
     }
     
