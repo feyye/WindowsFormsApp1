@@ -141,7 +141,7 @@ namespace WindowsFormsApp1
 //        private void button2_Click(object sender, EventArgs e)
         private void testStartBtn(object sender, EventArgs e)
         {
-//            throw new System.NotImplementedException();
+            this.controller.test();
         }
 
         private void rateComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -327,6 +327,15 @@ namespace WindowsFormsApp1
                 return;
            
             controller.followSendDataToCom(text);
+        }
+
+        private void saveBtn_Click(object sender, EventArgs e)
+        {
+
+            if ("STAT: LIST-#11-0xBA0361220A3D".Contains("BA0361220A3D"))
+            {
+                String a = "";
+            }
         }
     }
 }

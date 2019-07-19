@@ -1,45 +1,41 @@
 using System;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
+//using System.Threading.Tasks;
 using System.Windows.Forms;
 using COMDBG;
+using Timer = System.Threading.Timer;
 
 namespace WindowsFormsApp1
 {
-    
-    
     public class ComController
     {
-
         ComModel comModel = new ComModel();
         ComModel followComModel = new ComModel();
         IView view;
-     
+
         public ComController(IView view)
         {
-
             this.view = view;
             this.view.SetController(this);
-            
-            
+
+
             //main
             comModel.comCloseEvent += new SerialPortEventHandler(this.view.CloseComEvent);
             comModel.comOpenEvent += new SerialPortEventHandler(this.view.OpenComEvent);
             comModel.comReceiveDataEvent += new SerialPortEventHandler(this.view.ComReceiveDataEvent);
-            
-            
+
+
             //follow
             followComModel.comCloseEvent += new SerialPortEventHandler(this.view.followCloseComEvent);
             followComModel.comOpenEvent += new SerialPortEventHandler(this.view.followOpenComEvent);
             followComModel.comReceiveDataEvent += new SerialPortEventHandler(this.view.followComReceiveDataEvent);
         }
-        
-        
-        
-        
-        
-        
-        
-         private static byte[] FromHex(string hex)
+
+
+        private static byte[] FromHex(string hex)
         {
             hex = hex.Replace("-", "");
             byte[] raw = new byte[hex.Length / 2];
@@ -53,8 +49,8 @@ namespace WindowsFormsApp1
                 {
                     //Do Nothing
                 }
-                
             }
+
             return raw;
         }
 
@@ -121,6 +117,7 @@ namespace WindowsFormsApp1
             {
                 return comModel.Send(Encoding.Default.GetBytes(str));
             }
+
             return true;
         }
 
@@ -149,11 +146,8 @@ namespace WindowsFormsApp1
         {
             comModel.Close();
         }
-        
-        
-        
-        
-        
+
+
         /// <summary>
         /// send bytes to serial port
         /// </summary>
@@ -175,6 +169,7 @@ namespace WindowsFormsApp1
             {
                 return followComModel.Send(Encoding.Default.GetBytes(str));
             }
+
             return true;
         }
 
@@ -203,9 +198,93 @@ namespace WindowsFormsApp1
         {
             followComModel.Close();
         }
+
+        public void test()
+        {
+
+
+            String followMac = getFollowMac();
+
+
+            int followMacLength = followMac.Length;
+            
+            String macs = globalScan(followMac);
+            
+            
+//            String destination = destinationScan(followMac);
+            
+          
+
+            
+
+
+//            Console.WriteLine("Hello World");
+        }
+
+        private String destinationScan(String mac)
+        {
+            SendDataToCom("AT:DS-"+mac);
+            Thread.Sleep(200);
+            SerialPortEventArgs serialPortEventArgs = comModel.getSerialPortEvent();
+            string hex2String = Hex2String(Bytes2Hex(serialPortEventArgs.receivedBytes));
+
+            return hex2String;
+        }
+        private String globalScan(String mac)
+        {
+            SendDataToCom("AT:GS");
+            Thread.Sleep(5000);
+           
+            
+            
+            
+
+            Timer timer = new Timer(o =>
+            {
+                string[] results = loadGlobalScanRecieveData();
+                for (var i = 0; i < results.Length; i++)
+                {
+                    String result = results[i];
+                    if (result.Contains(mac))
+                    {
+
+                        String rssiStr = results[i + 1];
+                        int start = rssiStr.IndexOf('(')+1;
+                        int end = rssiStr.IndexOf(')');
+                        String rssi = rssiStr.Substring(start, end-start);
+
+                        String a = "a";
+                    }
+                }
+                string scan = destinationScan(mac);
+            }, null, 500, -1);
+            
+
+//            new Timer(o => loadRecieveData());
+            
+//            Task.Delay(5000, tokenSource.Token);
+            return null;
+        }
+
+        private String[] loadGlobalScanRecieveData()
+        {
+            SerialPortEventArgs serialPortEventArgs = comModel.getSerialPortEvent();
+            string hex2String = Hex2String(Bytes2Hex(serialPortEventArgs.receivedBytes));
+            string[] results = Regex.Split(hex2String, "\r\n");
+            return results;
+        }
+        private String getFollowMac()
+        {
+            followSendDataToCom("TTM:MAC-?");
+            Thread.Sleep(100);
+            SerialPortEventArgs serialPortEventArgs = followComModel.getSerialPortEvent();
+            
+            string hex2String = Hex2String(Bytes2Hex(serialPortEventArgs.receivedBytes));
+            String mac = hex2String.Replace("\r\n", "").Replace("TTM:MAC-?","").Replace("TTM:MAC-","").Replace(" ","");
+            //解决最后一位空格的问题
+            mac = mac.Substring(0, mac.Length - 1);
+            return mac.Trim();
+        }
+        
     }
-    
-    
-    
-    
 }

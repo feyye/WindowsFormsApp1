@@ -51,6 +51,7 @@ namespace COMDBG
     public class ComModel
     {
         private SerialPort sp = new SerialPort();
+        private SerialPortEventArgs serialPortEvent  = null;
 
         public event SerialPortEventHandler comReceiveDataEvent = null;
         public event SerialPortEventHandler comOpenEvent = null;
@@ -87,6 +88,7 @@ namespace COMDBG
                 }
                 SerialPortEventArgs args = new SerialPortEventArgs();
                 args.receivedBytes = data;
+                serialPortEvent = args;
                 if (comReceiveDataEvent != null)
                 {
                     comReceiveDataEvent.Invoke(this, args);
@@ -232,6 +234,16 @@ namespace COMDBG
             }
             
         }
+        
+        public SerialPortEventArgs getSerialPortEvent(){
+    
+            
+            return serialPortEvent;
+        }
 
     }
+    
+    
+   
+    
 }
