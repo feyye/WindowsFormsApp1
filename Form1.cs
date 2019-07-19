@@ -125,17 +125,17 @@ namespace WindowsFormsApp1
 
         private void label5_Click(object sender, EventArgs e)
         {
-            throw new System.NotImplementedException();
+//            throw new System.NotImplementedException();
         }
 
         private void label6_Click(object sender, EventArgs e)
         {
-            throw new System.NotImplementedException();
+//            throw new System.NotImplementedException();
         }
 
         private void label7_Click(object sender, EventArgs e)
         {
-            throw new System.NotImplementedException();
+//            throw new System.NotImplementedException();
         }
 
 //        private void button2_Click(object sender, EventArgs e)
@@ -171,7 +171,11 @@ namespace WindowsFormsApp1
 
         private void mainSend_Click(object sender, EventArgs e)
         {
-//            throw new System.NotImplementedException();
+            string text = this.mainSendTextBox.Text;
+            if (text.Equals(""))
+            return;
+           
+            controller.SendDataToCom(text);
         }
 
 
@@ -215,7 +219,20 @@ namespace WindowsFormsApp1
 
         public void ComReceiveDataEvent(object sender, SerialPortEventArgs e)
         {
-            throw new NotImplementedException();
+            if (this.InvokeRequired)
+            {
+                try
+                {
+                    Invoke(new Action<Object, SerialPortEventArgs>(ComReceiveDataEvent), sender, e);
+                }
+                catch (System.Exception)
+                {
+                    //disable form destroy exception
+                }
+                return;
+            }
+            
+            this.mainTextBox.AppendText(Encoding.Default.GetString(e.receivedBytes));
         }
 
         public void followOpenComEvent(object sender, SerialPortEventArgs e)
@@ -247,7 +264,20 @@ namespace WindowsFormsApp1
 
         public void followComReceiveDataEvent(object sender, SerialPortEventArgs e)
         {
-            throw new NotImplementedException();
+            if (this.InvokeRequired)
+            {
+                try
+                {
+                    Invoke(new Action<Object, SerialPortEventArgs>(followComReceiveDataEvent), sender, e);
+                }
+                catch (System.Exception)
+                {
+                    //disable form destroy exception
+                }
+                return;
+            }
+            
+            this.followTextBox.AppendText(Encoding.Default.GetString(e.receivedBytes));
         }
 
         private void followSerialOpenBtn_Click(object sender, EventArgs e)
@@ -288,6 +318,15 @@ namespace WindowsFormsApp1
             {
                 controller.followCloseSerialPort();
             }
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            string text = this.followSendTextBox.Text;
+            if (text.Equals(""))
+                return;
+           
+            controller.followSendDataToCom(text);
         }
     }
 }
