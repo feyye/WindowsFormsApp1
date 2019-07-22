@@ -23,6 +23,13 @@ namespace WindowsFormsApp1
         private String followMac = "";
         private Boolean isDone = false;
 
+
+
+        private String mainRssiThreshold;
+        private String followRssiThreshold;
+        private String sendRssi;
+        private String recieveRssi;
+
         private StringBuilder comReceiveData = new StringBuilder();
         private StringBuilder followComReceiveData = new StringBuilder();
 
@@ -324,12 +331,13 @@ namespace WindowsFormsApp1
             followSendDataToCom(command);
         }
 
-        public void test()
+        public void test(string mainRssiThreshold)
         {
             followComReceiveData.Clear();
             comReceiveData.Clear();
             followMac = "";
             isDone = false;
+            
             
             flows.Clear();
             sendFollowCommand("TTM:MAC-?");

@@ -139,7 +139,9 @@ namespace WindowsFormsApp1
             
             this.mainTextBox.Text = "开始测试\n";
             this.followTextBox.Text = "开始测试\n";
-            this.controller.test();
+            
+            
+            this.controller.test(this.mainRSSIThreshold.Text);
 //            this.controller.validateResult(this.mainTextBox);
 
             btn.Enabled = true;
@@ -376,6 +378,11 @@ namespace WindowsFormsApp1
             {
                 String a = "";
             }
+        }
+
+        private void mainRSSIThreshold_TextChanged(object sender, EventArgs e)
+        {
+//            throw new System.NotImplementedException();
         }
     }
 }
