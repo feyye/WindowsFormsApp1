@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -12,9 +14,17 @@ namespace WindowsFormsApp1
 {
     public class ComController
     {
+
         ComModel comModel = new ComModel();
         ComModel followComModel = new ComModel();
         IView view;
+        List<String> flows = new List<String>();
+
+        private String followMac = "";
+        private Boolean isDone = false;
+
+        private StringBuilder comReceiveData = new StringBuilder();
+        private StringBuilder followComReceiveData = new StringBuilder();
 
         public ComController(IView view)
         {
@@ -32,6 +42,13 @@ namespace WindowsFormsApp1
             followComModel.comCloseEvent += new SerialPortEventHandler(this.view.followCloseComEvent);
             followComModel.comOpenEvent += new SerialPortEventHandler(this.view.followOpenComEvent);
             followComModel.comReceiveDataEvent += new SerialPortEventHandler(this.view.followComReceiveDataEvent);
+            
+            
+            
+            
+            comModel.comReceiveDataEvent += ComReceiveDataEvent;
+            followComModel.comReceiveDataEvent += followComReceiveDataEvent;
+
         }
 
 
@@ -199,92 +216,125 @@ namespace WindowsFormsApp1
             followComModel.Close();
         }
 
-        public void test()
+
+        void ComReceiveDataEvent(Object sender, SerialPortEventArgs e)
         {
+            comReceiveData.Append(Encoding.Default.GetString(e.receivedBytes));
+            string hex2String = Hex2String(Bytes2Hex(e.receivedBytes));
 
-
-            String followMac = getFollowMac();
-
-
-            int followMacLength = followMac.Length;
-            
-            String macs = globalScan(followMac);
-            
-            
-//            String destination = destinationScan(followMac);
-            
-          
-
-            
-
-
-//            Console.WriteLine("Hello World");
-        }
-
-        private String destinationScan(String mac)
-        {
-            SendDataToCom("AT:DS-"+mac);
-            Thread.Sleep(200);
-            SerialPortEventArgs serialPortEventArgs = comModel.getSerialPortEvent();
-            string hex2String = Hex2String(Bytes2Hex(serialPortEventArgs.receivedBytes));
-
-            return hex2String;
-        }
-        private String globalScan(String mac)
-        {
-            SendDataToCom("AT:GS");
-            Thread.Sleep(5000);
-           
-            
-            
-            
-
-            Timer timer = new Timer(o =>
+            string lastCommand = getLastCommand();
+            if (lastCommand.Equals("AT:GS")&&hex2String.Contains("STAT:"))
             {
-                string[] results = loadGlobalScanRecieveData();
+                
+                string[] results = Regex.Split(hex2String, "\r\n");
                 for (var i = 0; i < results.Length; i++)
                 {
                     String result = results[i];
-                    if (result.Contains(mac))
+                    if (result.Contains(followMac))
                     {
 
                         String rssiStr = results[i + 1];
-                        int start = rssiStr.IndexOf('(')+1;
+                        int start = rssiStr.IndexOf('(') + 1;
                         int end = rssiStr.IndexOf(')');
-                        String rssi = rssiStr.Substring(start, end-start);
+                        String rssi = rssiStr.Substring(start, end - start);
+                        Console.Write(hex2String);
+                        
+                        sendCommand("AT:DS-"+followMac);
+                        break;
 
-                        String a = "a";
                     }
                 }
-                string scan = destinationScan(mac);
-            }, null, 500, -1);
-            
 
-//            new Timer(o => loadRecieveData());
+                Console.Write(hex2String);
+
+            }else if (lastCommand.Contains("AT:DS-"))
+            {
+                Console.Write(hex2String);
+                if (hex2String.Contains("OK"))
+                {
+                    testResult(true);
+                }else if (hex2String.Contains("CM"))
+                {
+                    testResult(true);
+                }
+
+            }
             
-//            Task.Delay(5000, tokenSource.Token);
-            return null;
+            if (hex2String.Contains("ERR-")){
+                testResult(false);
+                
+            }
         }
 
-        private String[] loadGlobalScanRecieveData()
+        void followComReceiveDataEvent(Object sender, SerialPortEventArgs e)
         {
-            SerialPortEventArgs serialPortEventArgs = comModel.getSerialPortEvent();
-            string hex2String = Hex2String(Bytes2Hex(serialPortEventArgs.receivedBytes));
-            string[] results = Regex.Split(hex2String, "\r\n");
-            return results;
+            followComReceiveData.Append(Encoding.Default.GetString(e.receivedBytes));
+            Console.WriteLine(e.receivedBytes);
+            string lastCommand = getLastCommand();
+            if (lastCommand.Equals("TTM:MAC-?"))
+            {
+                string hex2String = Hex2String(Bytes2Hex(e.receivedBytes));
+
+                if (hex2String.Contains(lastCommand))
+                {
+                    String mac = hex2String.Replace("\r\n", "").Replace("TTM:MAC-?", "").Replace("TTM:MAC-", "")
+                        .Replace(" ", "");
+                    //解决最后一位空格的问题
+                    mac = mac.Substring(0, mac.Length - 1);
+                    followMac = mac;
+                    sendCommand("AT:GS");
+                }
+            }
         }
-        private String getFollowMac()
+
+        public void testResult(Boolean success)
         {
-            followSendDataToCom("TTM:MAC-?");
-            Thread.Sleep(100);
-            SerialPortEventArgs serialPortEventArgs = followComModel.getSerialPortEvent();
+            if (isDone)
+            {
+                return;
+            }
+
+            isDone = true;
+            view.testResuktEvent(success);
+
+        }
+
+
+        public String getLastCommand()
+        {
+            if (flows == null || flows.Count == 0)
+            {
+                return "";
+            }
+
+            string lastCommand = flows[flows.Count - 1];
+
+            return lastCommand;
+        }
+
+        public void sendCommand(String command)
+        {
+            flows.Add(command);
+            SendDataToCom(command);
+        }
+
+        public void sendFollowCommand(String command)
+        {
+            flows.Add(command);
+            followSendDataToCom(command);
+        }
+
+        public void test()
+        {
+            followComReceiveData.Clear();
+            comReceiveData.Clear();
+            followMac = "";
+            isDone = false;
             
-            string hex2String = Hex2String(Bytes2Hex(serialPortEventArgs.receivedBytes));
-            String mac = hex2String.Replace("\r\n", "").Replace("TTM:MAC-?","").Replace("TTM:MAC-","").Replace(" ","");
-            //解决最后一位空格的问题
-            mac = mac.Substring(0, mac.Length - 1);
-            return mac.Trim();
+            flows.Clear();
+            sendFollowCommand("TTM:MAC-?");
+            
         }
-        
+
     }
 }

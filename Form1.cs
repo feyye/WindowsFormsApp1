@@ -12,54 +12,52 @@ using COMDBG;
 
 namespace WindowsFormsApp1
 {
-   
-    public partial class Form1 : Form ,IView
+    public partial class Form1 : Form, IView
     {
-
         private ComController controller;
         private SerialPort sp = new SerialPort();
+
         public Form1()
         {
             InitializeComponent();
-            
+
             initMainComponent();
             initFollowComponent();
-           
-
         }
 
 
         private void initFollowComponent()
         {
-            
-            string[]  ports = SerialPort.GetPortNames();
+            string[] ports = SerialPort.GetPortNames();
             for (var i = 0; i < ports.Length; i++)
             {
                 followSerialComboBox.Items.Add(ports[i]);
             }
+
             followSerialComboBox.SelectedIndex = 0;
             followRateComboBox.Items.AddRange(new object[] {4800, 9600, 19200, 38400, 57600, 115200});
             followRateComboBox.SelectedIndex = 5;
             followDTRCheckBox.Checked = true;
             followRTXCheckBox.Checked = true;
-
         }
+
         private void initMainComponent()
         {
-            string[]  ports = SerialPort.GetPortNames();
+            string[] ports = SerialPort.GetPortNames();
             for (var i = 0; i < ports.Length; i++)
             {
                 mainSerialComboBox.Items.Add(ports[i]);
             }
+
             mainSerialComboBox.SelectedIndex = 0;
             mainRateComboBox.Items.AddRange(new object[] {4800, 9600, 19200, 38400, 57600, 115200});
             mainRateComboBox.SelectedIndex = 5;
             MainDTRCheckBox.Checked = true;
             MainRTXCheckBox.Checked = true;
         }
+
         private void Form1_Load(object sender, EventArgs e)
         {
-
         }
 
         private void Button1_Click(object sender, EventArgs e)
@@ -81,7 +79,7 @@ namespace WindowsFormsApp1
                 string stopBits = "1";
                 string parity = "None";
                 string handshake = "None";
-                controller.OpenSerialPort(portName,baudRate,dataBits,stopBits,parity,handshake);
+                controller.OpenSerialPort(portName, baudRate, dataBits, stopBits, parity, handshake);
             }
             else
             {
@@ -89,7 +87,6 @@ namespace WindowsFormsApp1
             }
 
 
-           
 //            OpenFileDialog openFileDialog = new OpenFileDialog();
 //            openFileDialog.Title = "choose file to save";
 //            if (openFileDialog.ShowDialog()==DialogResult.OK)
@@ -100,27 +97,22 @@ namespace WindowsFormsApp1
 
         private void ComboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-
         }
 
         private void Label1_Click(object sender, EventArgs e)
         {
-
         }
 
         private void CheckBox1_CheckedChanged(object sender, EventArgs e)
         {
-
         }
 
         private void CheckBox1_CheckedChanged_1(object sender, EventArgs e)
         {
-
         }
 
         private void Label2_Click(object sender, EventArgs e)
         {
-
         }
 
         private void label5_Click(object sender, EventArgs e)
@@ -141,7 +133,23 @@ namespace WindowsFormsApp1
 //        private void button2_Click(object sender, EventArgs e)
         private void testStartBtn(object sender, EventArgs e)
         {
+
+            Button btn = (Button) sender;
+            btn.Enabled = false;
+            
+            this.mainTextBox.Text = "开始测试\n";
+            this.followTextBox.Text = "开始测试\n";
             this.controller.test();
+//            this.controller.validateResult(this.mainTextBox);
+
+            btn.Enabled = true;
+
+
+
+
+//            this.mainTextBox.AppendText("测试结束\n");
+//            this.followTextBox.AppendText("测试结束\n");
+//            
         }
 
         private void rateComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -173,8 +181,8 @@ namespace WindowsFormsApp1
         {
             string text = this.mainSendTextBox.Text;
             if (text.Equals(""))
-            return;
-           
+                return;
+
             controller.SendDataToCom(text);
         }
 
@@ -188,33 +196,26 @@ namespace WindowsFormsApp1
         {
             if (e.isOpend)
             {
-                
                 this.mainSerialOpenBtn.Text = "close";
-            }else
+            }
+            else
             {
                 MessageBox.Show("打开失败");
             }
-           
-            
         }
 
         public void CloseComEvent(object sender, SerialPortEventArgs e)
         {
-            
-            
-            
             if (this.InvokeRequired)
             {
                 Invoke(new Action<Object, SerialPortEventArgs>(CloseComEvent), sender, e);
                 return;
             }
-            
+
             if (!e.isOpend)
             {
-                
                 this.mainSerialOpenBtn.Text = "open";
             }
-
         }
 
         public void ComReceiveDataEvent(object sender, SerialPortEventArgs e)
@@ -229,9 +230,10 @@ namespace WindowsFormsApp1
                 {
                     //disable form destroy exception
                 }
+
                 return;
             }
-            
+
             this.mainTextBox.AppendText(Encoding.Default.GetString(e.receivedBytes));
         }
 
@@ -239,7 +241,6 @@ namespace WindowsFormsApp1
         {
             if (e.isOpend)
             {
-                
                 this.followSerialOpenBtn.Text = "close";
             }
             else
@@ -255,9 +256,9 @@ namespace WindowsFormsApp1
                 Invoke(new Action<Object, SerialPortEventArgs>(followCloseComEvent), sender, e);
                 return;
             }
+
             if (!e.isOpend)
             {
-                
                 this.followSerialOpenBtn.Text = "open";
             }
         }
@@ -274,10 +275,44 @@ namespace WindowsFormsApp1
                 {
                     //disable form destroy exception
                 }
+
+                return;
+            }
+
+            this.followTextBox.AppendText(Encoding.Default.GetString(e.receivedBytes));
+        }
+
+      
+
+        public void testResuktEvent(Boolean success)
+        {
+            
+            if (this.InvokeRequired)
+            {
+                try
+                {
+                    Invoke(new Action<Boolean> (testResuktEvent),success);
+                }
+                catch (System.Exception)
+                {
+                    //disable form destroy exception
+                }
+
                 return;
             }
             
-            this.followTextBox.AppendText(Encoding.Default.GetString(e.receivedBytes));
+
+            if (success)
+            {
+                showSuccessResult();
+
+                
+            }
+            else
+            {
+                showFailResult();
+            }
+
         }
 
         private void followSerialOpenBtn_Click(object sender, EventArgs e)
@@ -291,14 +326,12 @@ namespace WindowsFormsApp1
                 string stopBits = "1";
                 string parity = "None";
                 string handshake = "None";
-                controller.followOpenSerialPort(portName,baudRate,dataBits,stopBits,parity,handshake);
+                controller.followOpenSerialPort(portName, baudRate, dataBits, stopBits, parity, handshake);
             }
             else
             {
                 controller.followCloseSerialPort();
             }
-            
-            
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -312,7 +345,7 @@ namespace WindowsFormsApp1
                 string stopBits = "1";
                 string parity = "None";
                 string handshake = "None";
-                controller.followOpenSerialPort(portName,baudRate,dataBits,stopBits,parity,handshake);
+                controller.followOpenSerialPort(portName, baudRate, dataBits, stopBits, parity, handshake);
             }
             else
             {
@@ -325,13 +358,20 @@ namespace WindowsFormsApp1
             string text = this.followSendTextBox.Text;
             if (text.Equals(""))
                 return;
-           
+
             controller.followSendDataToCom(text);
         }
 
+        public void showFailResult()
+        {
+            MessageBox.Show("失败");
+        }
+        public void showSuccessResult()
+        {
+            MessageBox.Show("测试成功");
+        }
         private void saveBtn_Click(object sender, EventArgs e)
         {
-
             if ("STAT: LIST-#11-0xBA0361220A3D".Contains("BA0361220A3D"))
             {
                 String a = "";

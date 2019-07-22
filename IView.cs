@@ -26,5 +26,8 @@ namespace WindowsFormsApp1
         
         
         
+        void testResuktEvent(Boolean success);
+        
+        
     }
 }
