@@ -68,12 +68,13 @@ namespace WindowsFormsApp1
             // 
             // mainSerialOpenBtn
             // 
-            this.mainSerialOpenBtn.Location = new System.Drawing.Point(233, 484);
+            this.mainSerialOpenBtn.AutoSize = true;
+            this.mainSerialOpenBtn.Location = new System.Drawing.Point(222, 480);
             this.mainSerialOpenBtn.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.mainSerialOpenBtn.Name = "mainSerialOpenBtn";
-            this.mainSerialOpenBtn.Size = new System.Drawing.Size(88, 26);
+            this.mainSerialOpenBtn.Size = new System.Drawing.Size(88, 31);
             this.mainSerialOpenBtn.TabIndex = 0;
-            this.mainSerialOpenBtn.Text = "open";
+            this.mainSerialOpenBtn.Text = "打开";
             this.mainSerialOpenBtn.UseVisualStyleBackColor = true;
             this.mainSerialOpenBtn.Click += new System.EventHandler(this.Button1_Click);
             // 
@@ -81,7 +82,7 @@ namespace WindowsFormsApp1
             // 
             this.mainSerialComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.mainSerialComboBox.FormattingEnabled = true;
-            this.mainSerialComboBox.Location = new System.Drawing.Point(65, 482);
+            this.mainSerialComboBox.Location = new System.Drawing.Point(65, 480);
             this.mainSerialComboBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.mainSerialComboBox.Name = "mainSerialComboBox";
             this.mainSerialComboBox.Size = new System.Drawing.Size(140, 25);
@@ -95,9 +96,9 @@ namespace WindowsFormsApp1
             this.label1.Location = new System.Drawing.Point(0, 484);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(45, 17);
+            this.label1.Size = new System.Drawing.Size(50, 17);
             this.label1.TabIndex = 2;
-            this.label1.Text = "com：";
+            this.label1.Text = "COM：";
             this.label1.Click += new System.EventHandler(this.Label1_Click);
             // 
             // MainRTXCheckBox
@@ -139,43 +140,45 @@ namespace WindowsFormsApp1
             // 
             this.mainRateComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.mainRateComboBox.FormattingEnabled = true;
-            this.mainRateComboBox.Location = new System.Drawing.Point(201, 516);
+            this.mainRateComboBox.Location = new System.Drawing.Point(210, 517);
             this.mainRateComboBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.mainRateComboBox.Name = "mainRateComboBox";
-            this.mainRateComboBox.Size = new System.Drawing.Size(119, 25);
+            this.mainRateComboBox.Size = new System.Drawing.Size(100, 25);
             this.mainRateComboBox.TabIndex = 6;
             this.mainRateComboBox.SelectedIndexChanged +=
                 new System.EventHandler(this.rateComboBox_SelectedIndexChanged);
             // 
             // mainTextBox
             // 
-            this.mainTextBox.Location = new System.Drawing.Point(-1, 1);
+            this.mainTextBox.Location = new System.Drawing.Point(0, 0);
             this.mainTextBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.mainTextBox.Multiline = true;
             this.mainTextBox.Name = "mainTextBox";
             this.mainTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.mainTextBox.Size = new System.Drawing.Size(321, 473);
+            this.mainTextBox.Size = new System.Drawing.Size(310, 480);
             this.mainTextBox.TabIndex = 7;
             // 
             // label5
             // 
-            this.label5.Location = new System.Drawing.Point(159, 7);
+            this.label5.Font = new System.Drawing.Font("Microsoft YaHei UI", 14F);
+            this.label5.Location = new System.Drawing.Point(132, 8);
             this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(100, 23);
+            this.label5.Size = new System.Drawing.Size(100, 47);
             this.label5.TabIndex = 16;
-            this.label5.Text = "master";
+            this.label5.Text = "主";
             this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.label5.Click += new System.EventHandler(this.label5_Click);
             // 
             // label6
             // 
-            this.label6.Location = new System.Drawing.Point(639, 7);
+            this.label6.Font = new System.Drawing.Font("Microsoft YaHei UI", 14F);
+            this.label6.Location = new System.Drawing.Point(630, 8);
             this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(100, 23);
+            this.label6.Size = new System.Drawing.Size(100, 40);
             this.label6.TabIndex = 17;
-            this.label6.Text = "slave";
+            this.label6.Text = "从";
             this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.label6.Click += new System.EventHandler(this.label6_Click);
             // 
@@ -196,62 +199,67 @@ namespace WindowsFormsApp1
             this.mainRSSIThreshold.Name = "mainRSSIThreshold";
             this.mainRSSIThreshold.Size = new System.Drawing.Size(100, 23);
             this.mainRSSIThreshold.TabIndex = 19;
-            this.mainRSSIThreshold.TextChanged += new System.EventHandler(this.mainRSSIThreshold_TextChanged);
+            this.mainRSSIThreshold.Text = "-60";
+            this.mainRSSIThreshold.KeyPress +=
+                new System.Windows.Forms.KeyPressEventHandler(this.mainRSSIThreshold_TextChanged);
             // 
             // testBtn
             // 
+            this.testBtn.BackColor = System.Drawing.SystemColors.ButtonShadow;
             this.testBtn.Font = new System.Drawing.Font("Microsoft YaHei UI", 16F);
-            this.testBtn.Location = new System.Drawing.Point(749, 707);
+            this.testBtn.Location = new System.Drawing.Point(749, 759);
             this.testBtn.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.testBtn.Name = "testBtn";
             this.testBtn.Size = new System.Drawing.Size(100, 50);
             this.testBtn.TabIndex = 22;
-            this.testBtn.Text = "test";
-            this.testBtn.UseVisualStyleBackColor = true;
+            this.testBtn.Text = "测试";
+            this.testBtn.UseVisualStyleBackColor = false;
             this.testBtn.Click += new System.EventHandler(this.testStartBtn);
             // 
             // saveBtn
             // 
             this.saveBtn.Font = new System.Drawing.Font("Microsoft YaHei UI", 16F);
-            this.saveBtn.Location = new System.Drawing.Point(525, 707);
+            this.saveBtn.Location = new System.Drawing.Point(528, 759);
             this.saveBtn.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.saveBtn.Name = "saveBtn";
             this.saveBtn.Size = new System.Drawing.Size(100, 50);
             this.saveBtn.TabIndex = 23;
-            this.saveBtn.Text = "save";
+            this.saveBtn.Text = "保存";
             this.saveBtn.UseVisualStyleBackColor = true;
             this.saveBtn.Click += new System.EventHandler(this.saveBtn_Click);
             // 
             // mainSendTextBox
             // 
-            this.mainSendTextBox.Location = new System.Drawing.Point(0, 577);
+            this.mainSendTextBox.Location = new System.Drawing.Point(0, 589);
             this.mainSendTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.mainSendTextBox.Multiline = true;
             this.mainSendTextBox.Name = "mainSendTextBox";
-            this.mainSendTextBox.Size = new System.Drawing.Size(321, 56);
+            this.mainSendTextBox.Size = new System.Drawing.Size(310, 56);
             this.mainSendTextBox.TabIndex = 24;
             this.mainSendTextBox.TextChanged += new System.EventHandler(this.textBox5_TextChanged);
             // 
             // mainSend
             // 
-            this.mainSend.Location = new System.Drawing.Point(246, 545);
+            this.mainSend.AutoSize = true;
+            this.mainSend.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
+            this.mainSend.Location = new System.Drawing.Point(234, 545);
             this.mainSend.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.mainSend.Name = "mainSend";
-            this.mainSend.Size = new System.Drawing.Size(75, 26);
+            this.mainSend.Size = new System.Drawing.Size(75, 38);
             this.mainSend.TabIndex = 25;
-            this.mainSend.Text = "send";
+            this.mainSend.Text = "发送";
             this.mainSend.UseVisualStyleBackColor = true;
             this.mainSend.Click += new System.EventHandler(this.mainSend_Click);
             // 
             // resultLabel
             // 
-            this.resultLabel.ForeColor = System.Drawing.Color.DarkGreen;
-            this.resultLabel.Location = new System.Drawing.Point(27, 734);
+            this.resultLabel.ForeColor = System.Drawing.Color.Black;
+            this.resultLabel.Location = new System.Drawing.Point(26, 779);
             this.resultLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.resultLabel.Name = "resultLabel";
             this.resultLabel.Size = new System.Drawing.Size(321, 23);
             this.resultLabel.TabIndex = 27;
-            this.resultLabel.Text = "test 105  success 100";
+            this.resultLabel.Text = "测试成功0个";
             this.resultLabel.Click += new System.EventHandler(this.label9_Click);
             // 
             // panel1
@@ -268,10 +276,10 @@ namespace WindowsFormsApp1
             this.panel1.Controls.Add(this.MainRTXCheckBox);
             this.panel1.Controls.Add(this.mainRSSIThreshold);
             this.panel1.Controls.Add(this.label7);
-            this.panel1.Location = new System.Drawing.Point(27, 34);
+            this.panel1.Location = new System.Drawing.Point(54, 51);
             this.panel1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(324, 650);
+            this.panel1.Size = new System.Drawing.Size(324, 686);
             this.panel1.TabIndex = 29;
             // 
             // panel2
@@ -288,38 +296,39 @@ namespace WindowsFormsApp1
             this.panel2.Controls.Add(this.followRTXCheckBox);
             this.panel2.Controls.Add(this.followRSSIThreshold);
             this.panel2.Controls.Add(this.label12);
-            this.panel2.Location = new System.Drawing.Point(525, 34);
+            this.panel2.Location = new System.Drawing.Point(525, 51);
             this.panel2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(324, 650);
+            this.panel2.Size = new System.Drawing.Size(324, 694);
             this.panel2.TabIndex = 31;
             // 
             // followSerialOpenBtn
             // 
-            this.followSerialOpenBtn.Location = new System.Drawing.Point(233, 479);
+            this.followSerialOpenBtn.AutoSize = true;
+            this.followSerialOpenBtn.Location = new System.Drawing.Point(222, 480);
             this.followSerialOpenBtn.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.followSerialOpenBtn.Name = "followSerialOpenBtn";
-            this.followSerialOpenBtn.Size = new System.Drawing.Size(88, 26);
+            this.followSerialOpenBtn.Size = new System.Drawing.Size(88, 31);
             this.followSerialOpenBtn.TabIndex = 32;
-            this.followSerialOpenBtn.Text = "open";
+            this.followSerialOpenBtn.Text = "打开";
             this.followSerialOpenBtn.UseVisualStyleBackColor = true;
             this.followSerialOpenBtn.Click += new System.EventHandler(this.button1_Click);
             // 
             // followTextBox
             // 
-            this.followTextBox.Location = new System.Drawing.Point(4, 1);
+            this.followTextBox.Location = new System.Drawing.Point(0, 0);
             this.followTextBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.followTextBox.Multiline = true;
             this.followTextBox.Name = "followTextBox";
             this.followTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.followTextBox.Size = new System.Drawing.Size(321, 473);
+            this.followTextBox.Size = new System.Drawing.Size(310, 480);
             this.followTextBox.TabIndex = 7;
             // 
             // followSerialComboBox
             // 
             this.followSerialComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.followSerialComboBox.FormattingEnabled = true;
-            this.followSerialComboBox.Location = new System.Drawing.Point(65, 482);
+            this.followSerialComboBox.Location = new System.Drawing.Point(65, 480);
             this.followSerialComboBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.followSerialComboBox.Name = "followSerialComboBox";
             this.followSerialComboBox.Size = new System.Drawing.Size(140, 25);
@@ -328,30 +337,31 @@ namespace WindowsFormsApp1
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(0, 484);
+            this.label10.Location = new System.Drawing.Point(0, 480);
             this.label10.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(45, 17);
+            this.label10.Size = new System.Drawing.Size(50, 17);
             this.label10.TabIndex = 2;
-            this.label10.Text = "com：";
+            this.label10.Text = "COM：";
             // 
             // followSendTextBox
             // 
-            this.followSendTextBox.Location = new System.Drawing.Point(0, 577);
+            this.followSendTextBox.Location = new System.Drawing.Point(0, 589);
             this.followSendTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.followSendTextBox.Multiline = true;
             this.followSendTextBox.Name = "followSendTextBox";
-            this.followSendTextBox.Size = new System.Drawing.Size(321, 56);
+            this.followSendTextBox.Size = new System.Drawing.Size(310, 56);
             this.followSendTextBox.TabIndex = 24;
             // 
             // button7
             // 
-            this.button7.Location = new System.Drawing.Point(246, 545);
+            this.button7.AutoSize = true;
+            this.button7.Location = new System.Drawing.Point(234, 545);
             this.button7.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(75, 26);
+            this.button7.Size = new System.Drawing.Size(75, 31);
             this.button7.TabIndex = 25;
-            this.button7.Text = "send";
+            this.button7.Text = "发送";
             this.button7.UseVisualStyleBackColor = true;
             this.button7.Click += new System.EventHandler(this.button7_Click);
             // 
@@ -359,10 +369,10 @@ namespace WindowsFormsApp1
             // 
             this.followRateComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.followRateComboBox.FormattingEnabled = true;
-            this.followRateComboBox.Location = new System.Drawing.Point(201, 516);
+            this.followRateComboBox.Location = new System.Drawing.Point(210, 514);
             this.followRateComboBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.followRateComboBox.Name = "followRateComboBox";
-            this.followRateComboBox.Size = new System.Drawing.Size(119, 25);
+            this.followRateComboBox.Size = new System.Drawing.Size(100, 25);
             this.followRateComboBox.TabIndex = 6;
             // 
             // label11
@@ -405,6 +415,9 @@ namespace WindowsFormsApp1
             this.followRSSIThreshold.Name = "followRSSIThreshold";
             this.followRSSIThreshold.Size = new System.Drawing.Size(100, 23);
             this.followRSSIThreshold.TabIndex = 19;
+            this.followRSSIThreshold.Text = "-60";
+            this.followRSSIThreshold.KeyPress +=
+                new System.Windows.Forms.KeyPressEventHandler(this.mainRSSIThreshold_TextChanged);
             // 
             // label12
             // 
@@ -419,7 +432,8 @@ namespace WindowsFormsApp1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(884, 761);
+            this.BackColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.ClientSize = new System.Drawing.Size(884, 861);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.resultLabel);
@@ -427,7 +441,10 @@ namespace WindowsFormsApp1
             this.Controls.Add(this.testBtn);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "Form1";
             this.Text = "串口测试";
             this.Load += new System.EventHandler(this.Form1_Load);

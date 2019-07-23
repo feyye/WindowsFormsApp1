@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
@@ -71,7 +72,7 @@ namespace WindowsFormsApp1
 //            string handshake
 
             Button btn = (Button) sender;
-            if (btn.Text.Equals("open"))
+            if (btn.Text.Equals("打开"))
             {
                 string portName = mainSerialComboBox.Text;
                 string baudRate = mainRateComboBox.Text;
@@ -133,20 +134,19 @@ namespace WindowsFormsApp1
 //        private void button2_Click(object sender, EventArgs e)
         private void testStartBtn(object sender, EventArgs e)
         {
-
+            
+            this.BackColor = Color.White;
             Button btn = (Button) sender;
             btn.Enabled = false;
-            
+
             this.mainTextBox.Text = "开始测试\n";
             this.followTextBox.Text = "开始测试\n";
-            
-            
-            this.controller.test(this.mainRSSIThreshold.Text);
+
+
+            this.controller.test(this.mainRSSIThreshold.Text, this.followRSSIThreshold.Text);
 //            this.controller.validateResult(this.mainTextBox);
 
             btn.Enabled = true;
-
-
 
 
 //            this.mainTextBox.AppendText("测试结束\n");
@@ -161,7 +161,7 @@ namespace WindowsFormsApp1
 
         private void label9_Click(object sender, EventArgs e)
         {
-            throw new System.NotImplementedException();
+//            throw new System.NotImplementedException();
         }
 
         private void textBox5_TextChanged(object sender, EventArgs e)
@@ -198,7 +198,7 @@ namespace WindowsFormsApp1
         {
             if (e.isOpend)
             {
-                this.mainSerialOpenBtn.Text = "close";
+                this.mainSerialOpenBtn.Text = "关闭";
             }
             else
             {
@@ -216,7 +216,7 @@ namespace WindowsFormsApp1
 
             if (!e.isOpend)
             {
-                this.mainSerialOpenBtn.Text = "open";
+                this.mainSerialOpenBtn.Text = "打开";
             }
         }
 
@@ -243,7 +243,7 @@ namespace WindowsFormsApp1
         {
             if (e.isOpend)
             {
-                this.followSerialOpenBtn.Text = "close";
+                this.followSerialOpenBtn.Text = "关闭";
             }
             else
             {
@@ -261,7 +261,7 @@ namespace WindowsFormsApp1
 
             if (!e.isOpend)
             {
-                this.followSerialOpenBtn.Text = "open";
+                this.followSerialOpenBtn.Text = "打开";
             }
         }
 
@@ -284,16 +284,47 @@ namespace WindowsFormsApp1
             this.followTextBox.AppendText(Encoding.Default.GetString(e.receivedBytes));
         }
 
-      
 
-        public void testResuktEvent(Boolean success)
+        public void testResuktEvent(bool success, Dictionary<string, TestModel> testModel)
         {
-            
             if (this.InvokeRequired)
             {
                 try
                 {
-                    Invoke(new Action<Boolean> (testResuktEvent),success);
+//                    Invoke(new Action<Object, SerialPortEventArgs>(followCloseComEvent), sender, e);
+
+                    Invoke(new Action<Boolean, Dictionary<string, TestModel>>((success1, testModel1) => testResuktEvent(success1, testModel1)), success, testModel);
+                }
+                catch (System.Exception)
+                {
+                    //disable form destroy exception
+                }
+
+                return;
+            }
+
+
+            if (success)
+            {
+                showSuccessResult(testModel);
+            }
+            else
+            {
+                showFailResult();
+            }
+        }
+
+        public void start()
+        {
+            if (this.InvokeRequired)
+            {
+                try
+                {
+//                    Invoke(new Action<Object, SerialPortEventArgs>(followCloseComEvent), sender, e);
+
+
+                    Invoke(new Action(start));
+
                 }
                 catch (System.Exception)
                 {
@@ -303,24 +334,15 @@ namespace WindowsFormsApp1
                 return;
             }
             
-
-            if (success)
-            {
-                showSuccessResult();
-
-                
-            }
-            else
-            {
-                showFailResult();
-            }
-
+            
+            this.testBtn.PerformClick();
+            
         }
 
         private void followSerialOpenBtn_Click(object sender, EventArgs e)
         {
             Button btn = (Button) sender;
-            if (btn.Text.Equals("open"))
+            if (btn.Text.Equals("打开"))
             {
                 string portName = followSerialComboBox.Text;
                 string baudRate = followRateComboBox.Text;
@@ -339,7 +361,7 @@ namespace WindowsFormsApp1
         private void button1_Click(object sender, EventArgs e)
         {
             Button btn = (Button) sender;
-            if (btn.Text.Equals("open"))
+            if (btn.Text.Equals("打开"))
             {
                 string portName = followSerialComboBox.Text;
                 string baudRate = followRateComboBox.Text;
@@ -366,23 +388,42 @@ namespace WindowsFormsApp1
 
         public void showFailResult()
         {
-            MessageBox.Show("失败");
+//            MessageBox.Show("失败");
+            this.BackColor = Color.DarkRed;
         }
-        public void showSuccessResult()
+
+        public void showSuccessResult(Dictionary<string, TestModel> testModel)
         {
-            MessageBox.Show("测试成功");
+//            MessageBox.Show("测试成功");
+
+            this.resultLabel.Text = "测试成功" + testModel.Count + "个";
+            this.BackColor = Color.Green;
         }
+
         private void saveBtn_Click(object sender, EventArgs e)
         {
-            if ("STAT: LIST-#11-0xBA0361220A3D".Contains("BA0361220A3D"))
+            FolderBrowserDialog openFileDialog = new FolderBrowserDialog();
+            openFileDialog.Description = "choose file to save";
+//            openFileDialog.
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                String a = "";
+                string file = openFileDialog.SelectedPath;
+                if (file != null)
+                {
+                    this.controller.saveTestResult(file);
+                }
             }
         }
 
-        private void mainRSSIThreshold_TextChanged(object sender, EventArgs e)
+        private void mainRSSIThreshold_TextChanged(object sender, KeyPressEventArgs e)
         {
 //            throw new System.NotImplementedException();
+
+            if (!(Char.IsNumber(e.KeyChar)) && e.KeyChar != (char) 13 && e.KeyChar != (char) 8)
+            {
+                e.Handled = true;
+            }
         }
+      
     }
 }

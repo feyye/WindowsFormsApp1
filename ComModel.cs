@@ -51,25 +51,55 @@ namespace COMDBG
     public class ComModel
     {
         private SerialPort sp = new SerialPort();
-        private SerialPortEventArgs serialPortEvent  = null;
+
+
+        private SerialPortEventArgs serialPortEvent = null;
 
         public event SerialPortEventHandler comReceiveDataEvent = null;
         public event SerialPortEventHandler comOpenEvent = null;
         public event SerialPortEventHandler comCloseEvent = null;
+        public event SerialPortEventHandler comNumEvent = null;
 
         private Object thisLock = new Object();
+
+
+        public ComModel()
+        {
+            sp.PinChanged += new SerialPinChangedEventHandler(pinChange);
+            sp.ErrorReceived += new SerialErrorReceivedEventHandler(errorRecieve);
+        }
+
 
         /// <summary>
         /// When serial received data, will call this method
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
+        private void errorRecieve(object sender, SerialErrorReceivedEventArgs e)
+        {
+            SerialPortEventArgs args = new SerialPortEventArgs();
+            if (comNumEvent != null)
+            {
+                comNumEvent.Invoke(this, args);
+            }
+        }
+        
+        private void pinChange(object sender, SerialPinChangedEventArgs e)
+        {
+            SerialPortEventArgs args = new SerialPortEventArgs();
+            if (comNumEvent != null)
+            {
+                comNumEvent.Invoke(this, args);
+            }
+        }
+
         private void DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             if (sp.BytesToRead <= 0)
             {
                 return;
             }
+
             //Thread Safety explain in MSDN:
             // Any public static (Shared in Visual Basic) members of this type are thread safe. 
             // Any instance members are not guaranteed to be thread safe.
@@ -86,6 +116,7 @@ namespace COMDBG
                 {
                     //catch read exception
                 }
+
                 SerialPortEventArgs args = new SerialPortEventArgs();
                 args.receivedBytes = data;
                 serialPortEvent = args;
@@ -95,7 +126,7 @@ namespace COMDBG
                 }
             }
         }
-        
+
         /// <summary>
         /// Send bytes to device
         /// </summary>
@@ -105,18 +136,19 @@ namespace COMDBG
         {
             if (!sp.IsOpen)
             {
-                return false;      
+                return false;
             }
 
             try
             {
-                sp.Write(bytes, 0, bytes.Length);  
+                sp.Write(bytes, 0, bytes.Length);
             }
             catch (System.Exception)
             {
-                return false;   //write failed
+                return false; //write failed
             }
-            return true;        //write successfully
+
+            return true; //write successfully
         }
 
         /// <summary>
@@ -136,6 +168,7 @@ namespace COMDBG
             {
                 Close();
             }
+
             sp.PortName = portName;
             sp.BaudRate = Convert.ToInt32(baudRate);
             sp.DataBits = Convert.ToInt16(dataBits);
@@ -153,16 +186,16 @@ namespace COMDBG
             if (handshake == "None")
             {
                 //Never delete this property
-                sp.RtsEnable = true; 
+                sp.RtsEnable = true;
                 sp.DtrEnable = true;
             }
-            
+
             SerialPortEventArgs args = new SerialPortEventArgs();
             try
             {
-                sp.StopBits = (StopBits)Enum.Parse(typeof(StopBits), stopBits);
-                sp.Parity = (Parity)Enum.Parse(typeof(Parity), parity);
-                sp.Handshake = (Handshake)Enum.Parse(typeof(Handshake), handshake);
+                sp.StopBits = (StopBits) Enum.Parse(typeof(StopBits), stopBits);
+                sp.Parity = (Parity) Enum.Parse(typeof(Parity), parity);
+                sp.Handshake = (Handshake) Enum.Parse(typeof(Handshake), handshake);
                 sp.WriteTimeout = 1000; /*Write time out*/
                 sp.Open();
                 sp.DataReceived += new SerialDataReceivedEventHandler(DataReceived);
@@ -172,11 +205,11 @@ namespace COMDBG
             {
                 args.isOpend = false;
             }
+
             if (comOpenEvent != null)
             {
                 comOpenEvent.Invoke(this, args);
             }
-            
         }
 
 
@@ -228,22 +261,16 @@ namespace COMDBG
             {
                 args.isOpend = true;
             }
+
             if (comCloseEvent != null)
             {
                 comCloseEvent.Invoke(this, args);
             }
-            
-        }
-        
-        public SerialPortEventArgs getSerialPortEvent(){
-    
-            
-            return serialPortEvent;
         }
 
+        public SerialPortEventArgs getSerialPortEvent()
+        {
+            return serialPortEvent;
+        }
     }
-    
-    
-   
-    
 }

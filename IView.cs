@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using COMDBG;
 
 namespace WindowsFormsApp1
@@ -26,7 +27,8 @@ namespace WindowsFormsApp1
         
         
         
-        void testResuktEvent(Boolean success);
+        void testResuktEvent(bool success, Dictionary<string, TestModel> testModel);
+        void start();
         
         
     }
