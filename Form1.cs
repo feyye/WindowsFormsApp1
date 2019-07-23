@@ -10,6 +10,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using COMDBG;
+using Microsoft.Office.Interop;
+
 
 namespace WindowsFormsApp1
 {
@@ -33,9 +35,10 @@ namespace WindowsFormsApp1
             for (var i = 0; i < ports.Length; i++)
             {
                 followSerialComboBox.Items.Add(ports[i]);
+                followSerialComboBox.SelectedIndex = 0;
+
             }
 
-            followSerialComboBox.SelectedIndex = 0;
             followRateComboBox.Items.AddRange(new object[] {4800, 9600, 19200, 38400, 57600, 115200});
             followRateComboBox.SelectedIndex = 5;
             followDTRCheckBox.Checked = true;
@@ -48,9 +51,10 @@ namespace WindowsFormsApp1
             for (var i = 0; i < ports.Length; i++)
             {
                 mainSerialComboBox.Items.Add(ports[i]);
+                mainSerialComboBox.SelectedIndex = 0;
             }
 
-            mainSerialComboBox.SelectedIndex = 0;
+            
             mainRateComboBox.Items.AddRange(new object[] {4800, 9600, 19200, 38400, 57600, 115200});
             mainRateComboBox.SelectedIndex = 5;
             MainDTRCheckBox.Checked = true;
@@ -414,6 +418,10 @@ namespace WindowsFormsApp1
                 }
             }
         }
+        
+        
+        
+        
 
         private void mainRSSIThreshold_TextChanged(object sender, KeyPressEventArgs e)
         {
@@ -424,6 +432,40 @@ namespace WindowsFormsApp1
                 e.Handled = true;
             }
         }
-      
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            string[] ports = SerialPort.GetPortNames();
+            mainSerialComboBox.Items.Clear();
+            string selectedText = mainSerialComboBox.SelectedText;
+//            int selectedIndex = mainSerialComboBox.SelectedIndex;
+//            object item = mainSerialComboBox.SelectedItem;
+//            string text = mainSerialComboBox.Text;
+            for (var i = 0; i < ports.Length; i++)
+            {
+                mainSerialComboBox.Items.Add(ports[i]);
+                mainSerialComboBox.SelectedIndex = 0;
+                if (selectedText.Equals(ports[i]))
+                {
+                    mainSerialComboBox.SelectedIndex = i;
+                }
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            string[] ports = SerialPort.GetPortNames();
+            followSerialComboBox.Items.Clear();
+            string selectedText = followSerialComboBox.SelectedText;
+            for (var i = 0; i < ports.Length; i++)
+            {
+                followSerialComboBox.Items.Add(ports[i]);
+                followSerialComboBox.SelectedIndex = 0;
+                if (selectedText.Equals(ports[i]))
+                {
+                    followSerialComboBox.SelectedIndex = i;
+                }
+            }
+        }
     }
 }

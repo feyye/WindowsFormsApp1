@@ -30,7 +30,7 @@ namespace WindowsFormsApp1
         private String sendRssi;
         private String recieveRssi;
         private TestModel testModel = new TestModel();
-        private Dictionary<String,TestModel> testModelMap = new Dictionary<String,TestModel>();
+        private Dictionary<String, TestModel> testModelMap = new Dictionary<String, TestModel>();
 
         private StringBuilder comReceiveData = new StringBuilder();
         private StringBuilder followComReceiveData = new StringBuilder();
@@ -55,17 +55,11 @@ namespace WindowsFormsApp1
 
             comModel.comReceiveDataEvent += ComReceiveDataEvent;
             followComModel.comReceiveDataEvent += followComReceiveDataEvent;
-            
-            
-            
-            
-            
         }
 
 
         private void comNum()
         {
-            
         }
 
 
@@ -273,8 +267,8 @@ namespace WindowsFormsApp1
                 if (hex2String.Contains("SBM"))
                 {
                     testResult(false);
-                    
-                }else if (hex2String.Contains("OK"))
+                }
+                else if (hex2String.Contains("OK"))
                 {
 //                    testResult(true);
                 }
@@ -299,12 +293,13 @@ namespace WindowsFormsApp1
             string hex2String = Hex2String(Bytes2Hex(e.receivedBytes));
 
             string lastCommand = getLastCommand();
-            
+
             if (hex2String.Contains("Module is work!"))
             {
 //                test("-60", "-60");
                 this.view.start();
-            }else if (getLastCommand().Equals("TTM:MAC-?"))
+            }
+            else if (getLastCommand().Equals("TTM:MAC-?"))
             {
                 if (hex2String.Contains(getLastCommand()))
                 {
@@ -339,7 +334,7 @@ namespace WindowsFormsApp1
                             {
                                 testModel.recieveRssi = (sum / testModel.rssiList.Count).ToString();
                                 testModelMap.Remove(testModel.mac);
-                                testModelMap.Add(testModel.mac,testModel);
+                                testModelMap.Add(testModel.mac, testModel);
                                 testResult(true);
                             }
                             else
@@ -408,27 +403,36 @@ namespace WindowsFormsApp1
 
         public void saveTestResult(string file)
         {
+            //before your loop
+            var csv = new StringBuilder();
             String dateTime = DateTime.Now.ToString("yyyy年MM月dd日HH时mm分ss秒");
-            String path = file + "\\test-"+dateTime+".txt";
+            String path = file + "\\test-" + dateTime + ".csv";
             String lineBreak = "\r\n";
-            foreach (KeyValuePair<string,TestModel> model in testModelMap)
+//            var newLine = string.Format("{0},{1},{2},{3}", "mac", "时间", "发送Rssi",
+//                "接收Rssi");
+//            csv.AppendLine(Encoding.UTF8.GetString(Encoding.Default.GetBytes(newLine)));
+            File.AppendAllText(path, "mac地址,时间,发送Rssi,接收Rssi"+lineBreak, Encoding.UTF8);
+            foreach (KeyValuePair<string, TestModel> model in testModelMap)
             {
-                
-                File.AppendAllText(path, "mac : "+model.Value.mac + lineBreak, Encoding.UTF8);
-                File.AppendAllText(path, "time : "+model.Value.time + lineBreak, Encoding.UTF8);
-                File.AppendAllText(path, "sendRssi : "+model.Value.sendRssi + lineBreak, Encoding.UTF8);
-                File.AppendAllText(path, "recieveRssi : "+model.Value.recieveRssi + lineBreak, Encoding.UTF8);
-                File.AppendAllText(path, lineBreak, Encoding.UTF8);
-                
-            }
-            
-            
-            
-            File.AppendAllText(path, "总共 : "+testModelMap.Count + "个测试通过", Encoding.UTF8);
-            
-            testModelMap = new Dictionary<String,TestModel>();
+//                File.AppendAllText(path, "mac : " + model.Value.mac + lineBreak, Encoding.UTF8);
+//                File.AppendAllText(path, "time : " + model.Value.time + lineBreak, Encoding.UTF8);
+//                File.AppendAllText(path, "sendRssi : " + model.Value.sendRssi + lineBreak, Encoding.UTF8);
+//                File.AppendAllText(path, "recieveRssi : " + model.Value.recieveRssi + lineBreak, Encoding.UTF8);
+//                File.AppendAllText(path, lineBreak, Encoding.UTF8);
 
-            
+                File.AppendAllText(path, model.Value.mac+","+model.Value.time+","+model.Value.sendRssi+","+
+                    model.Value.recieveRssi +lineBreak, Encoding.UTF8);
+//                newLine = string.Format("{0},{1},{2},{3}", model.Value.mac, model.Value.time, model.Value.sendRssi,
+//                    model.Value.recieveRssi);
+//                Encoding.UTF8.GetString(Encoding.Default.GetBytes(newLine));
+//                csv.AppendLine(Encoding.UTF8.GetString(Encoding.Default.GetBytes(newLine)));
+            }
+
+
+//            File.WriteAllText(path, csv.ToString());
+            File.AppendAllText(path, "总共 : " + testModelMap.Count + "个测试通过", Encoding.UTF8);
+
+            testModelMap = new Dictionary<String, TestModel>();
         }
     }
 }
