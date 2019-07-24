@@ -29,7 +29,8 @@ namespace WindowsFormsApp1
         
         void testResuktEvent(bool success, Dictionary<string, TestModel> testModel);
         void start();
-        
-        
+
+
+        void clear();
     }
 }

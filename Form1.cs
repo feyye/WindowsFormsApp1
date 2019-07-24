@@ -344,6 +344,14 @@ namespace WindowsFormsApp1
             
         }
 
+        public void clear()
+        {
+            this.testResultLabel.Text = "";
+            this.BackColor = Color.White;
+            this.resultLabel.Text = "测试成功0个";
+
+        }
+
         private void followSerialOpenBtn_Click(object sender, EventArgs e)
         {
             Button btn = (Button) sender;

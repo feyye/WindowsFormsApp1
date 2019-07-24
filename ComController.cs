@@ -362,7 +362,7 @@ namespace WindowsFormsApp1
                    
                     //解决最后一位空格的问题
                     mac = mac.Substring(0, mac.Length - 1);
-                    if (mac.Length>12)
+                    if (mac.Length==14)
                     {
                         mac = mac.Substring(2);
                     }
@@ -496,8 +496,6 @@ namespace WindowsFormsApp1
 
         public void saveTestResult(string file)
         {
-            //before your loop
-//            var csv = new StringBuilder();
             String dateTime = DateTime.Now.ToString("yyyy年MM月dd日HH时mm分ss秒");
             String path = file + "\\test-" + dateTime + ".csv";
             String lineBreak = "\r\n";
@@ -506,25 +504,15 @@ namespace WindowsFormsApp1
             File.AppendAllText(path, "编号,名字,mac地址,时间,发送Rssi,接收Rssi"+lineBreak, Encoding.UTF8);
             foreach (KeyValuePair<string, TestModel> model in testModelMap)
             {
-//                File.AppendAllText(path, "mac : " + model.Value.mac + lineBreak, Encoding.UTF8);
-//                File.AppendAllText(path, "time : " + model.Value.time + lineBreak, Encoding.UTF8);
-//                File.AppendAllText(path, "sendRssi : " + model.Value.sendRssi + lineBreak, Encoding.UTF8);
-//                File.AppendAllText(path, "recieveRssi : " + model.Value.recieveRssi + lineBreak, Encoding.UTF8);
-//                File.AppendAllText(path, lineBreak, Encoding.UTF8);
                 num = num + 1;
                 File.AppendAllText(path, num+","+model.Value.name+","+model.Value.mac+","+model.Value.time+","+model.Value.sendRssi+","+
                     model.Value.recieveRssi +lineBreak, Encoding.UTF8);
-//                newLine = string.Format("{0},{1},{2},{3}", model.Value.mac, model.Value.time, model.Value.sendRssi,
-//                    model.Value.recieveRssi);
-//                Encoding.UTF8.GetString(Encoding.Default.GetBytes(newLine));
-//                csv.AppendLine(Encoding.UTF8.GetString(Encoding.Default.GetBytes(newLine)));
             }
-
-
-//            File.WriteAllText(path, csv.ToString());
+            
             File.AppendAllText(path, "总共 : " + testModelMap.Count + "个测试通过", Encoding.UTF8);
 
             testModelMap = new Dictionary<String, TestModel>();
+            this.view.clear();
         }
     }
 }
