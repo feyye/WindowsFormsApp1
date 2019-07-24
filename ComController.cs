@@ -302,6 +302,18 @@ namespace WindowsFormsApp1
 //                test("-60", "-60");
                 this.view.start();
             }
+            else if (getLastCommand().Equals("TTM:NAM-?"))
+            {
+                if (hex2String.Contains(getLastCommand()) || hex2String.Contains("TTM:NAM-"))
+                {
+                     String name = hex2String.Replace("\r\n", "").Replace("TTM:NAM-?", "").Replace("TTM:NAM-", "")
+                                            .Replace(" ", "");
+
+                     testModel.name = name;
+                     sendFollowCommand("TTM:MAC-?");
+
+                }
+            }
             else if (getLastCommand().Equals("TTM:MAC-?"))
             {
                 if (hex2String.Contains(getLastCommand())||hex2String.Contains("TTM:MAC-"))
@@ -403,7 +415,8 @@ namespace WindowsFormsApp1
             testModel.recieveRssiThreshold = recieveRssiThreshold;
             testModel.time = DateTime.Now;
             testModel.rssiList = new List<Int32>();
-            sendFollowCommand("TTM:MAC-?");
+//            sendFollowCommand("TTM:MAC-?");
+            sendFollowCommand("TTM:NAM-?");
         }
 
         public void saveTestResult(string file)
@@ -413,10 +426,8 @@ namespace WindowsFormsApp1
             String dateTime = DateTime.Now.ToString("yyyy年MM月dd日HH时mm分ss秒");
             String path = file + "\\test-" + dateTime + ".csv";
             String lineBreak = "\r\n";
-//            var newLine = string.Format("{0},{1},{2},{3}", "mac", "时间", "发送Rssi",
-//                "接收Rssi");
-//            csv.AppendLine(Encoding.UTF8.GetString(Encoding.Default.GetBytes(newLine)));
-            File.AppendAllText(path, "mac地址,时间,发送Rssi,接收Rssi"+lineBreak, Encoding.UTF8);
+
+            File.AppendAllText(path, "名字,mac地址,时间,发送Rssi,接收Rssi"+lineBreak, Encoding.UTF8);
             foreach (KeyValuePair<string, TestModel> model in testModelMap)
             {
 //                File.AppendAllText(path, "mac : " + model.Value.mac + lineBreak, Encoding.UTF8);
@@ -425,7 +436,7 @@ namespace WindowsFormsApp1
 //                File.AppendAllText(path, "recieveRssi : " + model.Value.recieveRssi + lineBreak, Encoding.UTF8);
 //                File.AppendAllText(path, lineBreak, Encoding.UTF8);
 
-                File.AppendAllText(path, model.Value.mac+","+model.Value.time+","+model.Value.sendRssi+","+
+                File.AppendAllText(path, model.Value.name+","+model.Value.mac+","+model.Value.time+","+model.Value.sendRssi+","+
                     model.Value.recieveRssi +lineBreak, Encoding.UTF8);
 //                newLine = string.Format("{0},{1},{2},{3}", model.Value.mac, model.Value.time, model.Value.sendRssi,
 //                    model.Value.recieveRssi);

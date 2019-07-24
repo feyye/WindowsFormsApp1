@@ -5,6 +5,7 @@ namespace WindowsFormsApp1
 {
     public class TestModel
     {
+        public String name;
         public String mac;
         public String sendRssiThreshold;
         public String sendRssi;
