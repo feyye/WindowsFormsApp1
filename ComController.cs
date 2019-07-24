@@ -34,6 +34,8 @@ namespace WindowsFormsApp1
 
         private StringBuilder comReceiveData = new StringBuilder();
         private StringBuilder followComReceiveData = new StringBuilder();
+        
+        private string randomChars = "ABCDFGHJKMPQRTVWXY123467890";
 
         public ComController(IView view)
         {
@@ -60,6 +62,19 @@ namespace WindowsFormsApp1
 
         private void comNum()
         {
+        }
+        
+        public string GetRandomStr(int passwordLen)
+        {
+            string randomStr = string.Empty;
+            int randomNum;
+            Random random = new Random();
+            for (int i = 0; i < passwordLen; i++)
+            {
+                randomNum = random.Next(randomChars.Length);
+                randomStr += randomChars[randomNum];
+            }
+            return randomStr;
         }
 
 
@@ -265,21 +280,45 @@ namespace WindowsFormsApp1
             }
             else if (getLastCommand().Contains("AT:DS-"))
             {
+                
+                
                 if (hex2String.Contains("SBM"))
                 {
                     testResult(false);
                 }
-                else if (hex2String.Contains("OK"))
+                else if (hex2String.Contains("AT: OK"))
                 {
 //                    testResult(true);
-                }
-                else if (hex2String.Contains("CM"))
-                {
-//                    testResult(true);
-
                     sendFollowCommand("TTM:RSI-ON");
                 }
+                
+            }else if (getLastCommand().Equals("COMMAND:TRAN"))
+            {
+                if (hex2String.Equals("00000000"))
+                {
+                    transparentAndTransmission("11111111");
+                }
             }
+            
+            
+            
+               if (hex2String.Contains("MODE: CM"))
+            {
+                testModel.MODE = "CM";
+            }else  if (hex2String.Contains("MODE: TTM"))
+            {
+                testModel.MODE = "TTM";
+            }
+//            if (hex2String.Contains("MODE"))
+//            {
+//                if (hex2String.Contains("CM"))
+//                {
+//                    testModel.MODE = "CM";
+//                }else  if (hex2String.Contains("TTM"))
+//                {
+//                    testModel.MODE = "TTM";
+//                }
+//            }
 
             if (hex2String.Contains("ERR-"))
             {
@@ -320,8 +359,13 @@ namespace WindowsFormsApp1
                 {
                     String mac = hex2String.Replace("\r\n", "").Replace("TTM:MAC-?", "").Replace("TTM:MAC-", "")
                         .Replace(" ", "");
+                   
                     //解决最后一位空格的问题
                     mac = mac.Substring(0, mac.Length - 1);
+                    if (mac.Length>12)
+                    {
+                        mac = mac.Substring(2);
+                    }
                     followMac = mac;
                     testModel.mac = mac;
                     sendCommand("AT:GS");
@@ -341,7 +385,7 @@ namespace WindowsFormsApp1
                         //合格
 
 //                        Console.Write(hex2String);
-                        if (testModel.rssiList.Count == 3)
+                        if (testModel.rssiList.Count >= 3)
                         {
                             int sum = testModel.rssiList.Sum();
 
@@ -350,20 +394,51 @@ namespace WindowsFormsApp1
                                 testModel.recieveRssi = (sum / testModel.rssiList.Count).ToString();
                                 testModelMap.Remove(testModel.mac);
                                 testModelMap.Add(testModel.mac, testModel);
-                                testResult(true);
+                                if (testModel.MODE.Equals("TTM"))
+                                {
+                                    sendFollowCommand("TTM:RSI-OFF");
+                                    Thread.Sleep(100);
+                                    followTransparentAndTransmission("00000000");
+                                }
+                                else
+                                {
+                                    sendFollowCommand("TTM:RSI-OFF");
+                                    testResult(true);
+                                }
+                                
                             }
                             else
                             {
+                                sendFollowCommand("TTM:RSI-OFF");
                                 testResult(false);
                             }
 
-                            sendFollowCommand("TTM:RSI-OFF");
+                            
                         }
                     }
+                }
+            }else if (getLastCommand().Equals("COMMAND:TRAN"))
+            {
+                if (hex2String.Equals("11111111"))
+                {
+                     testResult(true);
                 }
             }
         }
 
+        public void transparentAndTransmission(String data)
+        {
+
+            flows.Add("COMMAND:TRAN");
+            SendDataToCom(data);
+        }
+        
+        public void followTransparentAndTransmission(String data)
+        {
+            flows.Add("COMMAND:TRAN");
+            
+            followSendDataToCom(data);
+        }
         public void testResult(Boolean success)
         {
             if (isDone)
@@ -422,12 +497,13 @@ namespace WindowsFormsApp1
         public void saveTestResult(string file)
         {
             //before your loop
-            var csv = new StringBuilder();
+//            var csv = new StringBuilder();
             String dateTime = DateTime.Now.ToString("yyyy年MM月dd日HH时mm分ss秒");
             String path = file + "\\test-" + dateTime + ".csv";
             String lineBreak = "\r\n";
 
-            File.AppendAllText(path, "名字,mac地址,时间,发送Rssi,接收Rssi"+lineBreak, Encoding.UTF8);
+            int num = 0;
+            File.AppendAllText(path, "编号,名字,mac地址,时间,发送Rssi,接收Rssi"+lineBreak, Encoding.UTF8);
             foreach (KeyValuePair<string, TestModel> model in testModelMap)
             {
 //                File.AppendAllText(path, "mac : " + model.Value.mac + lineBreak, Encoding.UTF8);
@@ -435,8 +511,8 @@ namespace WindowsFormsApp1
 //                File.AppendAllText(path, "sendRssi : " + model.Value.sendRssi + lineBreak, Encoding.UTF8);
 //                File.AppendAllText(path, "recieveRssi : " + model.Value.recieveRssi + lineBreak, Encoding.UTF8);
 //                File.AppendAllText(path, lineBreak, Encoding.UTF8);
-
-                File.AppendAllText(path, model.Value.name+","+model.Value.mac+","+model.Value.time+","+model.Value.sendRssi+","+
+                num = num + 1;
+                File.AppendAllText(path, num+","+model.Value.name+","+model.Value.mac+","+model.Value.time+","+model.Value.sendRssi+","+
                     model.Value.recieveRssi +lineBreak, Encoding.UTF8);
 //                newLine = string.Format("{0},{1},{2},{3}", model.Value.mac, model.Value.time, model.Value.sendRssi,
 //                    model.Value.recieveRssi);

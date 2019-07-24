@@ -5,6 +5,7 @@ namespace WindowsFormsApp1
 {
     public class TestModel
     {
+        public String MODE;
         public String name;
         public String mac;
         public String sendRssiThreshold;
@@ -13,6 +14,9 @@ namespace WindowsFormsApp1
         public String recieveRssiThreshold;
         public List<Int32> rssiList;
         public DateTime time;
+        
+        public List<String> randomList = new List<string>();
+
         
         
         
