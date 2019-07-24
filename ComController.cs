@@ -34,7 +34,7 @@ namespace WindowsFormsApp1
 
         private StringBuilder comReceiveData = new StringBuilder();
         private StringBuilder followComReceiveData = new StringBuilder();
-        
+
         private string randomChars = "ABCDFGHJKMPQRTVWXY123467890";
 
         public ComController(IView view)
@@ -63,7 +63,7 @@ namespace WindowsFormsApp1
         private void comNum()
         {
         }
-        
+
         public string GetRandomStr(int passwordLen)
         {
             string randomStr = string.Empty;
@@ -74,6 +74,7 @@ namespace WindowsFormsApp1
                 randomNum = random.Next(randomChars.Length);
                 randomStr += randomChars[randomNum];
             }
+
             return randomStr;
         }
 
@@ -245,13 +246,19 @@ namespace WindowsFormsApp1
 
         void ComReceiveDataEvent(Object sender, SerialPortEventArgs e)
         {
-            Thread.Sleep(500);
+//            Thread.Sleep(500);
             comReceiveData.Append(Encoding.Default.GetString(e.receivedBytes));
             string hex2String = Hex2String(Bytes2Hex(e.receivedBytes));
 
             string lastCommand = getLastCommand();
             if (getLastCommand().Equals("AT:GS") && hex2String.Contains("STAT:"))
             {
+                
+                if (!hex2String.Contains(testModel.mac))
+                {
+                    sendCommand("AT:GS");
+                    return;
+                }
                 string[] results = Regex.Split(hex2String, "\r\n");
                 for (var i = 0; i < results.Length; i++)
                 {
@@ -276,36 +283,39 @@ namespace WindowsFormsApp1
                     }
                 }
 
+                
+
                 Console.Write(hex2String);
             }
             else if (getLastCommand().Contains("AT:DS-"))
             {
-                
-                
                 if (hex2String.Contains("SBM"))
                 {
+//                    sendCommand("AT:DS-" + testModel.mac);
                     testResult(false);
                 }
                 else if (hex2String.Contains("AT: OK"))
                 {
 //                    testResult(true);
+
+                    Thread.Sleep(100);
                     sendFollowCommand("TTM:RSI-ON");
                 }
-                
-            }else if (getLastCommand().Equals("COMMAND:TRAN"))
+            }
+            else if (getLastCommand().Equals("COMMAND:TRAN"))
             {
                 if (hex2String.Equals("00000000"))
                 {
                     transparentAndTransmission("11111111");
                 }
             }
-            
-            
-            
-               if (hex2String.Contains("MODE: CM"))
+
+
+            if (hex2String.Contains("MODE: CM"))
             {
                 testModel.MODE = "CM";
-            }else  if (hex2String.Contains("MODE: TTM"))
+            }
+            else if (hex2String.Contains("MODE: TTM"))
             {
                 testModel.MODE = "TTM";
             }
@@ -320,15 +330,20 @@ namespace WindowsFormsApp1
 //                }
 //            }
 
-            if (hex2String.Contains("ERR-"))
+            if (hex2String.Contains("AT: ERR-7"))
             {
-                testResult(false);
+                sendCommand("AT:RST");
+                
+                Thread.Sleep(200);
+                
+                sendCommand("AT:GS");
+//                testResult(false);
             }
         }
 
         void followComReceiveDataEvent(Object sender, SerialPortEventArgs e)
         {
-            Thread.Sleep(500);
+//            Thread.Sleep(500);
             followComReceiveData.Append(Encoding.Default.GetString(e.receivedBytes));
 //            Console.WriteLine(flows.ToString());
             string hex2String = Hex2String(Bytes2Hex(e.receivedBytes));
@@ -373,19 +388,25 @@ namespace WindowsFormsApp1
             }
             else if (getLastCommand().Equals("TTM:RSI-ON"))
             {
+
+                if (hex2String.Contains("TTM:ERP"))
+                {
+                    testResult(false);
+                }
                 string[] results = Regex.Split(hex2String, "\r\n");
                 for (var i = 0; i < results.Length; i++)
                 {
 //                    Int32 sum = 0;
                     if (results[i].Contains("TTM:RSI") && results[i].Contains("dBm"))
                     {
+//                        sendFollowCommand("TTM:RSI-OFF");
                         String rssi = results[i].Replace("TTM:RSI", "").Replace("dBm", "").Trim();
                         testModel.rssiList.Add(Int32.Parse(rssi));
 //                        sum = Int32.Parse(rssi)+ sum;
                         //合格
 
 //                        Console.Write(hex2String);
-                        if (testModel.rssiList.Count >= 3)
+                        if (testModel.rssiList.Count >= 1)
                         {
                             int sum = testModel.rssiList.Sum();
 
@@ -397,7 +418,7 @@ namespace WindowsFormsApp1
                                 if (testModel.MODE.Equals("TTM"))
                                 {
                                     sendFollowCommand("TTM:RSI-OFF");
-                                    Thread.Sleep(100);
+                                    Thread.Sleep(200);
                                     followTransparentAndTransmission("00000000");
                                 }
                                 else
@@ -428,17 +449,17 @@ namespace WindowsFormsApp1
 
         public void transparentAndTransmission(String data)
         {
-
             flows.Add("COMMAND:TRAN");
             SendDataToCom(data);
         }
-        
+
         public void followTransparentAndTransmission(String data)
         {
             flows.Add("COMMAND:TRAN");
-            
+
             followSendDataToCom(data);
         }
+
         public void testResult(Boolean success)
         {
             if (isDone)
@@ -467,14 +488,14 @@ namespace WindowsFormsApp1
         {
             flows.Add(command);
             SendDataToCom(command);
-            Thread.Sleep(100);
+//            Thread.Sleep(100);
         }
 
         public void sendFollowCommand(String command)
         {
             flows.Add(command);
             followSendDataToCom(command);
-            Thread.Sleep(100);
+//            Thread.Sleep(100);
         }
 
         public void test(string sendRssiThreshold, string recieveRssiThreshold)
@@ -501,18 +522,56 @@ namespace WindowsFormsApp1
             String lineBreak = "\r\n";
 
             int num = 0;
-            File.AppendAllText(path, "编号,名字,mac地址,时间,发送Rssi,接收Rssi"+lineBreak, Encoding.UTF8);
+            File.AppendAllText(path, "编号,名字,mac地址,时间,发送Rssi,接收Rssi" + lineBreak, Encoding.UTF8);
             foreach (KeyValuePair<string, TestModel> model in testModelMap)
             {
                 num = num + 1;
-                File.AppendAllText(path, num+","+model.Value.name+","+model.Value.mac+","+model.Value.time+","+model.Value.sendRssi+","+
-                    model.Value.recieveRssi +lineBreak, Encoding.UTF8);
+                File.AppendAllText(path, num + "," + model.Value.name + "," + model.Value.mac + "," + model.Value.time +
+                                         "," + model.Value.sendRssi + "," +
+                                         model.Value.recieveRssi + lineBreak, Encoding.UTF8);
             }
-            
+
             File.AppendAllText(path, "总共 : " + testModelMap.Count + "个测试通过", Encoding.UTF8);
 
             testModelMap = new Dictionary<String, TestModel>();
             this.view.clear();
+        }
+
+        public void mainBoxTextChange(string text)
+        {
+        }
+
+        public void followBoxTextChange(string text)
+        {
+//            string lastCommand = getLastCommand();
+//
+//            string[] results = Regex.Split(text, "\r\n");
+//
+//
+//            for (var i = 0; i < results.Length; i++)
+//            {
+//                String r = results[i];
+//
+//                //检测开始
+//                if (r.Contains("Module") && r.Contains("is") && r.Contains("work"))
+//                {
+//                    this.view.start();
+//                }
+//
+//                //1.获取名字
+//                if (getLastCommand().Equals("TTM:NAM-?"))
+//                {
+//                    if (r.Contains("TTM:NAM-") && (!r.Equals("TTM:NAM-?")))
+//                    {
+//                        String name = r.Replace("\r\n", "").Replace("TTM:NAM-?", "").Replace("TTM:NAM-", "")
+//                            .Replace(" ", "");
+//
+//                        if (name.Length < 12)
+//                            break;
+//                        testModel.name = name;
+//                    }
+//                }
+//            }
         }
     }
 }

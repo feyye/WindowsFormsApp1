@@ -67,37 +67,30 @@ namespace WindowsFormsApp1
 
         private void Button1_Click(object sender, EventArgs e)
         {
-//            SerialPort sp = new SerialPort();
-//            string[]  ports = SerialPort.GetPortNames();
-//            Console.WriteLine("sout");
-//            Console.WriteLine(ports);
 
-//            string dataBits, string stopBits, string parity,
-//            string handshake
-
-            Button btn = (Button) sender;
-            if (btn.Text.Equals("打开"))
+            try
             {
-                string portName = mainSerialComboBox.Text;
-                string baudRate = mainRateComboBox.Text;
-                string dataBits = "8";
-                string stopBits = "1";
-                string parity = "None";
-                string handshake = "None";
-                controller.OpenSerialPort(portName, baudRate, dataBits, stopBits, parity, handshake);
+                Button btn = (Button) sender;
+                if (btn.Text.Equals("打开"))
+                {
+                    string portName = mainSerialComboBox.Text;
+                    string baudRate = mainRateComboBox.Text;
+                    string dataBits = "8";
+                    string stopBits = "1";
+                    string parity = "None";
+                    string handshake = "None";
+                    controller.OpenSerialPort(portName, baudRate, dataBits, stopBits, parity, handshake);
+                }
+                else
+                {
+                    controller.CloseSerialPort();
+                }
             }
-            else
+            catch (Exception exception)
             {
-                controller.CloseSerialPort();
+                
             }
-
-
-//            OpenFileDialog openFileDialog = new OpenFileDialog();
-//            openFileDialog.Title = "choose file to save";
-//            if (openFileDialog.ShowDialog()==DialogResult.OK)
-//            {
-//                string file = openFileDialog.FileName;            
-//            }
+            
         }
 
         private void ComboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -143,8 +136,8 @@ namespace WindowsFormsApp1
             Button btn = (Button) sender;
             btn.Enabled = false;
 
-            this.mainTextBox.Text = "开始测试\n";
-            this.followTextBox.Text = "开始测试\n";
+            this.mainTextBox.Text = "开始测试\r\n";
+            this.followTextBox.Text = "开始测试\r\n";
             this.testResultLabel.Text = "";
 
 
@@ -373,21 +366,29 @@ namespace WindowsFormsApp1
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Button btn = (Button) sender;
-            if (btn.Text.Equals("打开"))
+            try
             {
-                string portName = followSerialComboBox.Text;
-                string baudRate = followRateComboBox.Text;
-                string dataBits = "8";
-                string stopBits = "1";
-                string parity = "None";
-                string handshake = "None";
-                controller.followOpenSerialPort(portName, baudRate, dataBits, stopBits, parity, handshake);
+                Button btn = (Button) sender;
+                if (btn.Text.Equals("打开"))
+                {
+                    string portName = followSerialComboBox.Text;
+                    string baudRate = followRateComboBox.Text;
+                    string dataBits = "8";
+                    string stopBits = "1";
+                    string parity = "None";
+                    string handshake = "None";
+                    controller.followOpenSerialPort(portName, baudRate, dataBits, stopBits, parity, handshake);
+                }
+                else
+                {
+                    controller.followCloseSerialPort();
+                }
             }
-            else
+            catch (Exception exception)
             {
-                controller.followCloseSerialPort();
+                
             }
+            
         }
 
         private void button7_Click(object sender, EventArgs e)
@@ -477,6 +478,17 @@ namespace WindowsFormsApp1
                     followSerialComboBox.SelectedIndex = i;
                 }
             }
+        }
+
+        private void mainTextBox_TextChanged(object sender, EventArgs e)
+        {
+//            Console.Write("sadada");
+            this.controller.mainBoxTextChange(this.mainTextBox.Text);
+        }
+
+        private void followTextBox_TextChanged(object sender, EventArgs e)
+        {
+            this.controller.followBoxTextChange(this.followTextBox.Text);
         }
     }
 }

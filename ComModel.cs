@@ -51,6 +51,7 @@ namespace COMDBG
     public class ComModel
     {
         private SerialPort sp = new SerialPort();
+        private List<byte> buffer = new List<byte>(4096);
 
 
         private SerialPortEventArgs serialPortEvent = null;
@@ -95,50 +96,67 @@ namespace COMDBG
 
         private void DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            if (sp.BytesToRead <= 0)
+            try
             {
-                return;
-            }
-
-            //Thread Safety explain in MSDN:
-            // Any public static (Shared in Visual Basic) members of this type are thread safe. 
-            // Any instance members are not guaranteed to be thread safe.
-            // So, we need to synchronize I/O
-            lock (thisLock)
-            {
-//                Thread.Sleep(1000);
-                int len = sp.BytesToRead;
-                Byte[] data = new Byte[len];
-                try
+                if (sp.BytesToRead <= 0)
                 {
-                    sp.Read(data, 0, len);
-                }
-                catch (System.Exception)
-                {
-                    //catch read exception
+                    return;
                 }
 
-                SerialPortEventArgs args = new SerialPortEventArgs();
-                args.receivedBytes = data;
-                serialPortEvent = args;
-
-                if (e.EventType == System.IO.Ports.SerialData.Eof)
+                //Thread Safety explain in MSDN:
+                // Any public static (Shared in Visual Basic) members of this type are thread safe. 
+                // Any instance members are not guaranteed to be thread safe.
+                // So, we need to synchronize I/O
+                lock (thisLock)
                 {
-                    Console.WriteLine("exception");
-                }
-                if (comReceiveDataEvent != null)
-                {
-                    try
+                    int satrt = Environment.TickCount;
+                    while (Math.Abs(Environment.TickCount-satrt)<500)
                     {
-                        comReceiveDataEvent.Invoke(this, args);
-                    }
-                    catch (Exception exception)
-                    {
-                        Console.WriteLine(exception);
-//                        throw;
-                    }
+                        int len = sp.BytesToRead;
+                        Byte[] data = new Byte[len];
+                        try
+                        {
+                            sp.Read(data, 0, len);
+                        }
+                        catch (System.Exception)
+                        {
+                            //catch read exception
+                        }
                     
+                        buffer.AddRange(data);
+                    }
+
+//                Thread.Sleep(1000);
+                
+
+                
+                    SerialPortEventArgs args = new SerialPortEventArgs();
+//                args.receivedBytes = data;
+                    args.receivedBytes = buffer.ToArray();
+                    serialPortEvent = args;
+
+               
+                    if (comReceiveDataEvent != null)
+                    {
+                        try
+                        {
+                            comReceiveDataEvent.Invoke(this, args);
+                        }
+                        catch (Exception exception)
+                        {
+                            Console.WriteLine(exception);
+//                        throw;
+                        }
+                    
+                    }
+                
+                    buffer.Clear();
                 }
+            }
+            catch (Exception exception)
+            {
+               
+                
             }
         }
 

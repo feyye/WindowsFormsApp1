@@ -136,6 +136,7 @@ namespace WindowsFormsApp1
             this.mainTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.mainTextBox.Size = new System.Drawing.Size(310, 480);
             this.mainTextBox.TabIndex = 7;
+            this.mainTextBox.TextChanged += new System.EventHandler(this.mainTextBox_TextChanged);
             this.label5.Font = new System.Drawing.Font("Microsoft YaHei UI", 14F);
             this.label5.Location = new System.Drawing.Point(132, 8);
             this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
@@ -282,6 +283,7 @@ namespace WindowsFormsApp1
             this.followTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.followTextBox.Size = new System.Drawing.Size(310, 480);
             this.followTextBox.TabIndex = 7;
+            this.followTextBox.TextChanged += new System.EventHandler(this.followTextBox_TextChanged);
             this.followSerialComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.followSerialComboBox.FormattingEnabled = true;
             this.followSerialComboBox.Location = new System.Drawing.Point(58, 480);
@@ -358,6 +360,7 @@ namespace WindowsFormsApp1
             this.label12.Text = "RSSI";
             this.testResultLabel.Font = new System.Drawing.Font("Microsoft YaHei UI", 16F);
             this.testResultLabel.Location = new System.Drawing.Point(278, 759);
+            this.testResultLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.testResultLabel.Name = "testResultLabel";
             this.testResultLabel.Size = new System.Drawing.Size(100, 50);
             this.testResultLabel.TabIndex = 32;
