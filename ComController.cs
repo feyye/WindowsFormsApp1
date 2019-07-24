@@ -230,6 +230,7 @@ namespace WindowsFormsApp1
 
         void ComReceiveDataEvent(Object sender, SerialPortEventArgs e)
         {
+            Thread.Sleep(500);
             comReceiveData.Append(Encoding.Default.GetString(e.receivedBytes));
             string hex2String = Hex2String(Bytes2Hex(e.receivedBytes));
 
@@ -288,20 +289,22 @@ namespace WindowsFormsApp1
 
         void followComReceiveDataEvent(Object sender, SerialPortEventArgs e)
         {
+            Thread.Sleep(500);
             followComReceiveData.Append(Encoding.Default.GetString(e.receivedBytes));
 //            Console.WriteLine(flows.ToString());
             string hex2String = Hex2String(Bytes2Hex(e.receivedBytes));
 
             string lastCommand = getLastCommand();
 
-            if (hex2String.Contains("Module is work!"))
+            
+            if (hex2String.Contains("Module")&&hex2String.Contains("is")&&hex2String.Contains("work"))
             {
 //                test("-60", "-60");
                 this.view.start();
             }
             else if (getLastCommand().Equals("TTM:MAC-?"))
             {
-                if (hex2String.Contains(getLastCommand()))
+                if (hex2String.Contains(getLastCommand())||hex2String.Contains("TTM:MAC-"))
                 {
                     String mac = hex2String.Replace("\r\n", "").Replace("TTM:MAC-?", "").Replace("TTM:MAC-", "")
                         .Replace(" ", "");
@@ -377,12 +380,14 @@ namespace WindowsFormsApp1
         {
             flows.Add(command);
             SendDataToCom(command);
+            Thread.Sleep(100);
         }
 
         public void sendFollowCommand(String command)
         {
             flows.Add(command);
             followSendDataToCom(command);
+            Thread.Sleep(100);
         }
 
         public void test(string sendRssiThreshold, string recieveRssiThreshold)

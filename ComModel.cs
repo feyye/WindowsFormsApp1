@@ -106,6 +106,7 @@ namespace COMDBG
             // So, we need to synchronize I/O
             lock (thisLock)
             {
+//                Thread.Sleep(1000);
                 int len = sp.BytesToRead;
                 Byte[] data = new Byte[len];
                 try
@@ -120,9 +121,23 @@ namespace COMDBG
                 SerialPortEventArgs args = new SerialPortEventArgs();
                 args.receivedBytes = data;
                 serialPortEvent = args;
+
+                if (e.EventType == System.IO.Ports.SerialData.Eof)
+                {
+                    Console.WriteLine("exception");
+                }
                 if (comReceiveDataEvent != null)
                 {
-                    comReceiveDataEvent.Invoke(this, args);
+                    try
+                    {
+                        comReceiveDataEvent.Invoke(this, args);
+                    }
+                    catch (Exception exception)
+                    {
+                        Console.WriteLine(exception);
+//                        throw;
+                    }
+                    
                 }
             }
         }

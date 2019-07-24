@@ -145,6 +145,7 @@ namespace WindowsFormsApp1
 
             this.mainTextBox.Text = "开始测试\n";
             this.followTextBox.Text = "开始测试\n";
+            this.testResultLabel.Text = "";
 
 
             this.controller.test(this.mainRSSIThreshold.Text, this.followRSSIThreshold.Text);
@@ -394,6 +395,7 @@ namespace WindowsFormsApp1
         {
 //            MessageBox.Show("失败");
             this.BackColor = Color.DarkRed;
+            this.testResultLabel.Text = "失败";
         }
 
         public void showSuccessResult(Dictionary<string, TestModel> testModel)
@@ -402,6 +404,7 @@ namespace WindowsFormsApp1
 
             this.resultLabel.Text = "测试成功" + testModel.Count + "个";
             this.BackColor = Color.Green;
+            this.testResultLabel.Text = "成功";
         }
 
         private void saveBtn_Click(object sender, EventArgs e)
