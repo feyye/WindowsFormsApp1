@@ -155,8 +155,9 @@ namespace COMDBG
             }
             catch (Exception exception)
             {
-               
-                
+
+                throw exception;
+
             }
         }
 

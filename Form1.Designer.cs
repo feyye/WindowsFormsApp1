@@ -383,6 +383,7 @@ namespace WindowsFormsApp1
             this.Name = "Form1";
             this.Text = "串口测试";
             this.Load += new System.EventHandler(this.Form1_Load);
+//            this.FormClosing += new System.FormClosedEventHandler(this.Form1_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);

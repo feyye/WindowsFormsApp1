@@ -26,6 +26,7 @@ namespace WindowsFormsApp1
 
             initMainComponent();
             initFollowComponent();
+            this.Closing += new CancelEventHandler(Form1_Closing);
         }
 
 
@@ -63,6 +64,20 @@ namespace WindowsFormsApp1
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            Console.Write("");
+        }
+        
+        private void Form1_Closing(object sender, CancelEventArgs e)
+        {
+            if (MessageBox.Show("退出测试数据会消失，是否要退出!", "是否确认退出？", MessageBoxButtons.OKCancel,
+                    MessageBoxIcon.Question) == DialogResult.OK)
+            {
+                
+            }
+            else
+            {
+                e.Cancel = true;
+            }
         }
 
         private void Button1_Click(object sender, EventArgs e)

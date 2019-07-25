@@ -253,12 +253,12 @@ namespace WindowsFormsApp1
             string lastCommand = getLastCommand();
             if (getLastCommand().Equals("AT:GS") && hex2String.Contains("STAT:"))
             {
-                
                 if (!hex2String.Contains(testModel.mac))
                 {
                     sendCommand("AT:GS");
                     return;
                 }
+
                 string[] results = Regex.Split(hex2String, "\r\n");
                 for (var i = 0; i < results.Length; i++)
                 {
@@ -283,7 +283,6 @@ namespace WindowsFormsApp1
                     }
                 }
 
-                
 
                 Console.Write(hex2String);
             }
@@ -333,9 +332,9 @@ namespace WindowsFormsApp1
             if (hex2String.Contains("AT: ERR-7"))
             {
                 sendCommand("AT:RST");
-                
+
                 Thread.Sleep(200);
-                
+
                 sendCommand("AT:GS");
 //                testResult(false);
             }
@@ -350,8 +349,8 @@ namespace WindowsFormsApp1
 
             string lastCommand = getLastCommand();
 
-            
-            if (hex2String.Contains("Module")&&hex2String.Contains("is")&&hex2String.Contains("work"))
+
+            if (hex2String.Contains("Module") && hex2String.Contains("is") && hex2String.Contains("work"))
             {
 //                test("-60", "-60");
                 this.view.start();
@@ -360,27 +359,27 @@ namespace WindowsFormsApp1
             {
                 if (hex2String.Contains(getLastCommand()) || hex2String.Contains("TTM:NAM-"))
                 {
-                     String name = hex2String.Replace("\r\n", "").Replace("TTM:NAM-?", "").Replace("TTM:NAM-", "")
-                                            .Replace(" ", "");
+                    String name = hex2String.Replace("\r\n", "").Replace("TTM:NAM-?", "").Replace("TTM:NAM-", "")
+                        .Replace(" ", "");
 
-                     testModel.name = name;
-                     sendFollowCommand("TTM:MAC-?");
-
+                    testModel.name = name;
+                    sendFollowCommand("TTM:MAC-?");
                 }
             }
             else if (getLastCommand().Equals("TTM:MAC-?"))
             {
-                if (hex2String.Contains(getLastCommand())||hex2String.Contains("TTM:MAC-"))
+                if (hex2String.Contains(getLastCommand()) || hex2String.Contains("TTM:MAC-"))
                 {
                     String mac = hex2String.Replace("\r\n", "").Replace("TTM:MAC-?", "").Replace("TTM:MAC-", "")
                         .Replace(" ", "");
-                   
+
                     //解决最后一位空格的问题
                     mac = mac.Substring(0, mac.Length - 1);
-                    if (mac.Length==14)
+                    if (mac.Length == 14)
                     {
                         mac = mac.Substring(2);
                     }
+
                     followMac = mac;
                     testModel.mac = mac;
                     sendCommand("AT:GS");
@@ -388,11 +387,11 @@ namespace WindowsFormsApp1
             }
             else if (getLastCommand().Equals("TTM:RSI-ON"))
             {
-
                 if (hex2String.Contains("TTM:ERP"))
                 {
                     testResult(false);
                 }
+
                 string[] results = Regex.Split(hex2String, "\r\n");
                 for (var i = 0; i < results.Length; i++)
                 {
@@ -426,23 +425,21 @@ namespace WindowsFormsApp1
                                     sendFollowCommand("TTM:RSI-OFF");
                                     testResult(true);
                                 }
-                                
                             }
                             else
                             {
                                 sendFollowCommand("TTM:RSI-OFF");
                                 testResult(false);
                             }
-
-                            
                         }
                     }
                 }
-            }else if (getLastCommand().Equals("COMMAND:TRAN"))
+            }
+            else if (getLastCommand().Equals("COMMAND:TRAN"))
             {
                 if (hex2String.Equals("11111111"))
                 {
-                     testResult(true);
+                    testResult(true);
                 }
             }
         }
@@ -468,6 +465,11 @@ namespace WindowsFormsApp1
             }
 
             isDone = true;
+            if (success)
+            {
+                saveTestResultLog();
+            }
+
             view.testResuktEvent(success, testModelMap);
         }
 
@@ -522,19 +524,49 @@ namespace WindowsFormsApp1
             String lineBreak = "\r\n";
 
             int num = 0;
-            File.AppendAllText(path, "编号,名字,mac地址,时间,发送Rssi,接收Rssi" + lineBreak, Encoding.UTF8);
+            File.AppendAllText(path, "编号,名字,mac地址,发送Rssi,接收Rssi,时间" + lineBreak, Encoding.UTF8);
             foreach (KeyValuePair<string, TestModel> model in testModelMap)
             {
                 num = num + 1;
-                File.AppendAllText(path, num + "," + model.Value.name + "," + model.Value.mac + "," + model.Value.time +
+                File.AppendAllText(path, num + "," + model.Value.name + "," + model.Value.mac +
                                          "," + model.Value.sendRssi + "," +
-                                         model.Value.recieveRssi + lineBreak, Encoding.UTF8);
+                                         model.Value.recieveRssi + "," + model.Value.time + lineBreak, Encoding.UTF8);
             }
 
             File.AppendAllText(path, "总共 : " + testModelMap.Count + "个测试通过", Encoding.UTF8);
 
             testModelMap = new Dictionary<String, TestModel>();
             this.view.clear();
+        }
+
+        public void saveTestResultLog()
+        {
+        
+            
+
+            String dateTime = DateTime.Now.ToString("yyyy年MM月dd日");
+            String path = Application.StartupPath + "\\logs\\log-" + dateTime + ".csv";
+            String lineBreak = "\r\n";
+            int num = 0;
+
+
+            FileInfo fileInfo = new FileInfo(path);
+            DirectoryInfo fileInfoDirectory = fileInfo.Directory;
+            if (!fileInfoDirectory.Exists)
+            {
+                fileInfoDirectory.Create();
+            }
+            fileInfo = new FileInfo(path);
+            if (!fileInfo.Exists)
+            {
+                File.AppendAllText(path, "编号,名字,mac地址,发送Rssi,接收Rssi,时间" + lineBreak, Encoding.UTF8);
+
+            }
+            File.AppendAllText(path, num + "," + testModel.name + "," + testModel.mac +
+                                     "," + testModel.sendRssi + "," +
+                                     testModel.recieveRssi + "," + testModel.time + lineBreak,
+                Encoding.UTF8);
+            
         }
 
         public void mainBoxTextChange(string text)
